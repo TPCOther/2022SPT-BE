@@ -15,6 +15,7 @@ public class Food {
 	@TableId(type = IdType.AUTO )
 	Long foodId;
 	String foodName;
+	String foodTag;
 	String foodDesc;
 	Float foodNormalPrice;
 	Float foodPromotionPrice;
@@ -24,6 +25,6 @@ public class Food {
 	Date createTime;
 	Date lastEditTime;
 	
+	Long categoryId;
 	List<FoodImg> foodImgList;//详情图
-	FoodCategory  foodCategory;
 }

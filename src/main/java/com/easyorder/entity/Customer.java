@@ -1,13 +1,18 @@
 package com.easyorder.entity;
 
+import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
 public class Customer {
-	
-	private int customerId;
+	@TableId(type=IdType.AUTO)
+	private Long customerId;
 	
 	private String customerNickname;
 	
@@ -19,14 +24,14 @@ public class Customer {
 	
 	private String customerGender;
 	
-	private int customerPhone;
+	private Integer customerPhone;
 	
-	private int customerPoint;//顾客积分
+	private Integer customerPoint;//顾客积分
 	
-	private int customerVip;
+	private Integer customerVip;
 	
-	private String createTime;
+	private Date createTime;
 	
-	private String lastEditTime;
+	private Date lastEditTime;
 	
 }

@@ -10,12 +10,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("din_table")
-public class DinTable {
-    @TableId(type = IdType.AUTO)
-    private Long dinTableId;
-    
-    private Integer dinTableState;
-    private Integer dinTableCapacity;
-
+@TableName("role")
+public class Role {
+	@TableId(type = IdType.AUTO)
+	Long roleId;
+	String roleName;
+	String roleDesc;
 }

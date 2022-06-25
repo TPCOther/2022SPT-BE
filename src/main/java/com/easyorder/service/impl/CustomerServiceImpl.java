@@ -1,4 +1,4 @@
-package com.easyorder.service.serviceImpl;
+package com.easyorder.service.impl;
 
 
 import javax.annotation.Resource;

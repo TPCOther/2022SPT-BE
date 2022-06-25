@@ -1,6 +1,5 @@
 package com.easyorder.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -9,11 +8,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("food_img")
-public class FoodImg {
-	@TableId(type = IdType.AUTO)
-	Long foodImg;
+@TableName("order_food")
+public class OrderFood {
+	@TableId
+	Long orderId;
+	@TableId
 	Long foodId;
-	String foodImgUrl;
-	String foodImgDesc;
+	Integer orderFoodState;
 }

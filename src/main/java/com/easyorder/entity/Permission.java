@@ -9,11 +9,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("food_img")
-public class FoodImg {
-	@TableId(type = IdType.AUTO)
-	Long foodImgId;
-	Long foodId;
-	String foodImgUrl;
-	String foodImgDesc;
+@TableName("permission")
+public class Permission {
+	@TableId(type=IdType.AUTO)
+	Long permissionId;
+	String permissionName;
+	String permissionUrl;
+	String permissionDesc;
+	Integer permissionState;
+	
 }

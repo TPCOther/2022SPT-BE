@@ -1,5 +1,7 @@
 package com.easyorder.entity;
 
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,11 +11,15 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("food_img")
-public class FoodImg {
+@TableName("booking")
+public class Booking {
 	@TableId(type = IdType.AUTO)
-	Long foodImgId;
-	Long foodId;
-	String foodImgUrl;
-	String foodImgDesc;
+	Long bookingId;
+	Date createTime;
+	Date startTime;
+	Date endTime;
+	Integer bookingState;
+	
+	Long customerId;
+	Long tableId;
 }

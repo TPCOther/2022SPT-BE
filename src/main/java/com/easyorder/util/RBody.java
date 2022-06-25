@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
-public class RBody extends HashMap<String,Object>{
-    public RBody(){
-        put("code", HttpStatus.OK);
+public class RBody extends HashMap<String, Object>{
+	public RBody(){
+        put("code", HttpStatus.OK.value());
         put("msg","success");
     }
 

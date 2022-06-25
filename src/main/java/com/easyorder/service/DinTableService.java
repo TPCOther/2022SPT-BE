@@ -1,8 +1,10 @@
 package com.easyorder.service;
 
+import java.util.List;
+
 import com.easyorder.entity.DinTable;
 
 public interface DinTableService {
-    String getDinTableList();
+    List<DinTable> getDinTableList();
     void insertDinTable(DinTable insertTable);
 }

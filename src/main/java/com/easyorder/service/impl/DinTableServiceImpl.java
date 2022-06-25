@@ -2,26 +2,24 @@ package com.easyorder.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.easyorder.entity.DinTable;
 import com.easyorder.mapper.DinTableMapper;
 import com.easyorder.service.DinTableService;
-import com.google.gson.Gson;
 
 @Service
 public class DinTableServiceImpl implements DinTableService {
     
-    private Gson gson = new Gson();
-    
-    @Autowired
+    @Resource
     private DinTableMapper dinTableMapper;
     
     @Override
-    public String getDinTableList(){
+    public List<DinTable> getDinTableList(){
         List<DinTable> tableList = dinTableMapper.selectList(null);
-        return gson.toJson(tableList);
+        return tableList;
     }
 
     @Override

@@ -17,8 +17,7 @@ public class FoodTest extends BaseTest {
 
 	@Test
 	public void foodInsert() {
-		FoodCategory f=new FoodCategory(null, "川菜", "色香味俱全", 1, new Date());
-		fm.insert(new Food(null, "回锅肉", "test", "test", 12.0f, 11.0f, FoodStateEum.EMPTY.getState(), "test", 1, new Date(), new Date(), (long) 1,null));
+		fm.insert(new Food(null, "回锅肉", "test", "test", 12.0f, 11.0f, FoodStateEum.SALING.getState(), "test", 1, new Date(), new Date(), (long) 1,null));
 	
 	}
 }

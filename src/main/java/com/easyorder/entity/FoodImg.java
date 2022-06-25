@@ -12,7 +12,7 @@ import lombok.Data;
 @TableName("food_img")
 public class FoodImg {
 	@TableId(type = IdType.AUTO)
-	Long foodImg;
+	Long foodImgId;
 	Long foodId;
 	String foodImgUrl;
 	String foodImgDesc;

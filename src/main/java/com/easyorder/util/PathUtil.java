@@ -1,5 +1,7 @@
 package com.easyorder.util;
 
+import com.easyorder.entity.Food;
+
 /*
  * 管理文件路径
  */
@@ -25,25 +27,20 @@ public class PathUtil {
 	}
 	
 	/**
-	 * 在设置商店的图片保存的相对路径"/upload/item/shop/"+shopId+"/"  一般和上面的根路径获得文件的绝对路径
-	 * @param shopId商店的ID 不同商店的图片保存在其对应的shopId下
+	 * 在设置商店的图片保存的相对路径"/upload/item/food/""/"  一般和上面的根路径获得文件的绝对路径
+	 * @param 
 	 * @return
 	 */
-	public static String getShopImagePath(long shopId) {
-		String imagePath="/upload/item/shop/"+shopId+"/";
-		return imagePath.replace("/", seperator);
+	public static String getFoodImagePath(Food food) {
+		String productImagePath="/upload/item/food/"+food.getFoodId()+"/product/";
+		return productImagePath.replace("/", seperator);
 	}
-	
-//	public static String getProductImagePath(Product product) {
-//		String productImagePath="/upload/item/shop/"+product.getShop().getShopId()+"/"+product.getProductId()+"/product/";
-//		return productImagePath.replace("/", seperator);
-//	}
-//	public static String getProductImageDetailPath(Product product) {
-//		String productImagePath="/upload/item/shop/"+product.getShop().getShopId()+"/"+product.getProductId()+"/productdetail/";
-//		return productImagePath.replace("/", seperator);
-//	}
-//	public static String getProductAllImagePath(Product product) {
-//		String productImagePath="/upload/item/shop/"+product.getShop().getShopId()+"/"+product.getProductId()+"/";
-//		return productImagePath.replace("/", seperator);
-//	}
+	public static String getFoodImageDetailPath(Food food) {
+		String productImagePath="/upload/item/food/"+food.getFoodId()+"/productdetail/";
+		return productImagePath.replace("/", seperator);
+	}
+	public static String getFoodAllImagePath(Food food) {
+		String productImagePath="/upload/item/food/"+food.getFoodId()+"/";
+		return productImagePath.replace("/", seperator);
+	}
 }

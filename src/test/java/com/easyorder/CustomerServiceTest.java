@@ -21,13 +21,13 @@ public class CustomerServiceTest {
 	@Resource
 	public	CustomerService cs;
 	@Test
-	@Ignore
 	public void testInsert() {
-		Customer customer=new Customer(null, "sh3rlock", null, "test", "test", "te", 0, 0, 0, new Date(), new Date());
-		int x=cs.insert(customer);
-		 System.out.print(x);
+		Customer customer=new Customer(null, "sh3rlock", null, "test1", "test", "te", 0, 0, 0, new Date(), new Date());
+		cs.insert(customer);
+		 System.out.print(customer);
 	}
 	@Test
+	@Ignore
 	public void testSelect() {
 		System.out.print(cs.findCustomerInfoById(1));
 	}

@@ -1,8 +1,8 @@
 package com.easyorder.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.easyorder.entity.Role;
+import com.github.jeffreyning.mybatisplus.base.MppBaseMapper;
 
-public interface RoleMapper extends BaseMapper<Role> {
+public interface RoleMapper extends MppBaseMapper<Role> {
 
 }

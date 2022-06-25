@@ -1,8 +1,8 @@
 package com.easyorder.entity;
 
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.github.jeffreyning.mybatisplus.anno.MppMultiId;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,8 +11,8 @@ import lombok.Data;
 @AllArgsConstructor
 @TableName("role_permission")
 public class RolePermission {
-	@TableId
+	@MppMultiId
 	Long roleId;
-	@TableId
+	@MppMultiId
 	Long permissionId;
 }

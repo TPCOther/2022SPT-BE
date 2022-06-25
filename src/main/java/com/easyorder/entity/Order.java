@@ -1,6 +1,7 @@
 package com.easyorder.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -11,12 +12,20 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("food_category")
-public class FoodCategory {
+@TableName("order")
+public class Order {
 	@TableId(type = IdType.AUTO)
-	Long foodCategoryId;
-	String foodCategoryName;
-	String foodCategoryDesc;
-	Integer priority;
+	Long orderId;
+	String orderDesc;
+	Integer orderState;
+	Integer orderAmount;
 	Date createTime;
-}	
+	Date payTime;
+	String orderEvalution;//评价
+	
+	Long customerId;
+	Long staffId;
+	Long tableId;
+	
+	List<Food> foodList;
+}

@@ -1,8 +1,8 @@
 /*
  * @Author: error: git config user.name && git config user.email & please set dead value or install git
  * @Date: 2022-06-24 17:38:23
- * @LastEditors: error: git config user.name && git config user.email & please set dead value or install git
- * @LastEditTime: 2022-06-25 10:53:20
+ * @LastEditors: 123456 2373464672@qq.com
+ * @LastEditTime: 2022-06-25 17:28:40
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\HeadlineController.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -36,19 +36,28 @@ public class HeadlineController {
     @Resource
     HeadlineService headlineService;
     Gson gson=new Gson();
-    @GetMapping("/showHeadline")
-    public String showHeadline()
+    @PostMapping("/selectHeadline")
+    public String selectHeadline(@RequestBody Headline headline)
     {
-        return gson.toJson(headlineService.getHeadlineList());
+        return gson.toJson(headlineService.getHeadlineList(headline));
     }
 
     @PostMapping("/updateHeadline")
-    public String updateHeadline(@RequestBody Headline updateHeadline)
+    public String updateHeadline(@RequestBody Headline headline)
     {
         
-        headlineService.updateHeadlineList(updateHeadline);
-        return gson.toJson(headlineService.getHeadlineList());
+        headlineService.updateHeadline(headline);
+        Headline headline2=new Headline();
+        return gson.toJson(headlineService.getHeadlineList(headline2));
     }
 
+    @PostMapping("/insertHeadline")
+    public String insertHeadline(@RequestBody Headline headline)
+    {
+        
+        headlineService.insertHeadline(headline);
+        Headline headline2=new Headline();
+        return gson.toJson(headlineService.getHeadlineList(headline2));
+    }
 
 }

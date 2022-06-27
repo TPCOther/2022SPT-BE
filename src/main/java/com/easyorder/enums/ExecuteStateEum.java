@@ -1,18 +1,19 @@
 package com.easyorder.enums;
 
-public enum StaffStateEnum {
-    RESIGN(-1,"已离职"),UNAVAILABLE(0,"暂不可用"),WROKING(1,"工作中");
+public enum ExecuteStateEum {
+    SUCCESS(1111,"操作成功"),INNER_ERROR(1000,"操作失败"),
+    EMPTY(1001,"结果为空"),INCOMPLETE(1002,"输入信息不完整");
 
     private int state;
     private String stateInfo;
     
-    private StaffStateEnum(int state, String stateInfo){
+    private ExecuteStateEum(int state, String stateInfo){
         this.state = state;
         this.stateInfo = stateInfo;
     }
 
-    public static StaffStateEnum stateOf(int state){
-        for(StaffStateEnum stateEnum : values()){
+    public static ExecuteStateEum stateOf(int state){
+        for(ExecuteStateEum stateEnum : values()){
             if(stateEnum.getState() == state){
                 return stateEnum;
             }

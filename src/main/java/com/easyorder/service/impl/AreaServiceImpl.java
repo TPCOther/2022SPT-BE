@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.easyorder.entity.Area;
 import com.easyorder.mapper.AreaMapper;
 import com.easyorder.service.AreaService;
@@ -19,16 +20,22 @@ public class AreaServiceImpl implements AreaService{
      * 查询所有区域
      */
     @Override
-    public List<Area> selectAreaList() {
-        List<Area> areaList = areaMapper.selectList(null);
-        return areaList;
+    public List<Area> selectAreaList(Long areaId,String areaName) throws BaseExecuteException{
+        QueryWrapper<Area> wapper = new QueryWrapper<>();
+        wapper.eq(areaId!=null,"area_id",areaId);
+        wapper.eq(areaName!=null&&areaName!="","area_name",areaName);
+        try{
+            List<Area> areaList = areaMapper.selectList(wapper);
+            return areaList;
+        }catch (Exception e) {
+            throw new BaseExecuteException("查询区域(Area)失败: "+e.toString());
+        }
     }
 
 
 
-
     /**
-     * 插入区域
+     * 插入区域,返回插入数据ID
      */
     @Override
     public Long insertArea(Area area) throws BaseExecuteException{
@@ -38,11 +45,11 @@ public class AreaServiceImpl implements AreaService{
                 throw new BaseExecuteException("创建区域(Area)失败: "+"插入0条数据");
             }
             return area.getAreaId();
-
-        }catch(Exception e){
-            throw new BaseExecuteException("创建区域(Area)失败: "+e.toString());
+            
+        }catch(Exception e){       
+            throw new BaseExecuteException("创建区域(Area)失败 - 未知错误: "+e.toString());
         }
-    }
+    }   
     /**
      * 更新区域
      */
@@ -75,6 +82,12 @@ public class AreaServiceImpl implements AreaService{
         }
         
     }
+
+
+
+
+
+    
 
     
 

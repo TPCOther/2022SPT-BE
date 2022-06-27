@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import org.junit.Test;
 
 import com.easyorder.entity.Food;
-import com.easyorder.entity.FoodCategory;
 import com.easyorder.enums.FoodStateEum;
 import com.easyorder.mapper.FoodMapper;
 

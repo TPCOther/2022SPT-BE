@@ -14,6 +14,6 @@ public interface FoodService extends IService<FoodImg> {
 	BaseExecution<Food> insertFood(Food food,CommonsMultipartFile foodImg,Map<CommonsMultipartFile,String>foodImgMap)throws BaseExecuteException;
 	BaseExecution<Food> updateFood(Food food,CommonsMultipartFile foodImg,Map<CommonsMultipartFile,String>foodImgMap)throws BaseExecuteException;
 	Food selectFoodByFoodId(Long foodId);
-	BaseExecution<Food> deletFoodByFoodId(Long FoodId)throws BaseExecuteException;
+	BaseExecution<Food> deletFoodByFoodId(Long foodId)throws BaseExecuteException;
 	BaseExecution<Food> selectFoodList(Food food,int pageIndex,int pageSize);
 }

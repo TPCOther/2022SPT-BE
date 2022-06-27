@@ -11,7 +11,7 @@ public class BaseExecution<T> {
 	private ExecuteStateEum eum;
 	private List<T> TList;
 	private T temp;
-	private int count;
+	private Long count;
 	public BaseExecution() {}
 	public BaseExecution(ExecuteStateEum eum) {
 		this.eum=eum;

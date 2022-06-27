@@ -23,6 +23,7 @@ public class CustomerServiceTest {
 	@Resource
 	public	CustomerService cs;
 	@Test
+	@Ignore
 	public void testInsertBath() {
 		Customer customer1=new Customer(null, "sh3rlock", null, "test1", "test", "te", 0, 0, 0, new Date(), new Date());
 		Customer customer2=new Customer(null, "sh3rlock", null, "test1", "test", "te", 0, 0, 0, new Date(), new Date());
@@ -34,7 +35,6 @@ public class CustomerServiceTest {
 		cs.saveBatch(customerList);
 	}
 	@Test
-	@Ignore
 	public void testSelect() {
 		System.out.print(cs.findCustomerInfoById(1));
 	}

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -16,8 +17,8 @@ import lombok.Data;
 public class Food {
 	@TableId(type = IdType.AUTO )
 	Long foodId;
-	String foodName;
 	String foodTag;
+	String foodName;
 	String foodDesc;
 	Float foodNormalPrice;
 	Float foodPromotionPrice;
@@ -27,6 +28,9 @@ public class Food {
 	Date createTime;
 	Date lastEditTime;
 	
+	
 	Long categoryId;
+	@TableField(exist = false)
 	List<FoodImg> foodImgList;//详情图
+	public Food() {}
 }

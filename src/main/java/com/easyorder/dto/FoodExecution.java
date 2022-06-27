@@ -5,11 +5,9 @@ import java.util.List;
 import com.easyorder.entity.Food;
 import com.easyorder.enums.FoodStateEum;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class FoodExecution {
 	private int state;
 	private String stateInfo;

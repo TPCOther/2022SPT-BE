@@ -53,7 +53,7 @@ public class ImageUtil {
 		File dest = new File(PathUtil.getImgBasePath() + relativeAddress);
 		try {
 			Thumbnails.of(thumbnail.getInputStream()).size(1000, 1000)
-					.watermark(Positions.BOTTOM_RIGHT, ImageIO.read(new File(basePath + "Sh3rlock.png")), 0.25f)
+					.watermark(Positions.BOTTOM_RIGHT, ImageIO.read(new File(basePath + "easyorder.png")), 0.25f)
 					.outputQuality(0.9f).toFile(dest);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,8 +1,9 @@
 package com.easyorder.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.easyorder.entity.Customer;
 
-public interface CustomerService {
+public interface CustomerService extends IService<Customer>{
 	Customer findCustomerInfoById(int id);
-	int insert(Customer customer);
+	int insertCustomer(Customer customer);
 }

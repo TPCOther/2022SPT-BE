@@ -1,6 +1,5 @@
 package com.easyorder.entity;
 
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -10,15 +9,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("din_table")
-public class DinTable {
+@TableName("area")
+public class Area {
     @TableId(type = IdType.AUTO)
-    private Long dinTableId;
-    
     private Long areaId;
 
-    private Integer dinTableState;
-    private Integer dinTableCapacity;
-    
-
+    private String areaName;
+    private String areaDesc;
 }

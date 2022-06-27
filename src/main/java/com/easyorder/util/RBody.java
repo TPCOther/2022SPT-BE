@@ -21,19 +21,19 @@ public class RBody extends HashMap<String, Object>{
     }
 
     public static RBody ok(String msg){
-    	RBody r=new RBody();
+        RBody r=new RBody();
         r.put("msg",msg);
         return r;
     }
 
     public static RBody ok(Map<String,Object> map){
-    	RBody r=new RBody();
+        RBody r=new RBody();
         r.putAll(map);
         return r;
     }
 
     public static RBody error(int code, String msg){
-    	RBody r=new RBody();
+        RBody r=new RBody();
         r.put("code",code);
         r.put("msg",msg);
         return r;
@@ -47,6 +47,3 @@ public class RBody extends HashMap<String, Object>{
         return error(HttpStatus.INTERNAL_SERVER_ERROR.value(),"未知错误，请联系管理员");
     }
 }
-
-
-

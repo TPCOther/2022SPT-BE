@@ -5,12 +5,13 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.entity.Customer;
 import com.easyorder.mapper.CustomerMapper;
 import com.easyorder.service.CustomerService;
 
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
 	@Resource
 	public CustomerMapper cm;
 	@Override
@@ -18,7 +19,7 @@ public class CustomerServiceImpl implements CustomerService {
 		return cm.selectById(id);
 	}
 	@Override
-	public int insert(Customer customer) {
+	public int insertCustomer(Customer customer) {
 		return cm.insert(customer);
 	}
 	

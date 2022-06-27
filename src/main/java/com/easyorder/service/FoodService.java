@@ -4,14 +4,16 @@ import java.util.Map;
 
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import com.easyorder.dto.FoodExecution;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Food;
+import com.easyorder.entity.FoodImg;
 import com.easyorder.util.BaseExecuteException;
 
-public interface FoodService {
-	FoodExecution insertFood(Food food,CommonsMultipartFile foodImg,Map<CommonsMultipartFile,String>foodImgList)throws BaseExecuteException;
-	FoodExecution updateFood(Food food,CommonsMultipartFile foodImg,Map<CommonsMultipartFile,String>foodImgList)throws BaseExecuteException;
+public interface FoodService extends IService<FoodImg> {
+	BaseExecution<Food> insertFood(Food food,CommonsMultipartFile foodImg,Map<CommonsMultipartFile,String>foodImgMap)throws BaseExecuteException;
+	BaseExecution<Food> updateFood(Food food,CommonsMultipartFile foodImg,Map<CommonsMultipartFile,String>foodImgMap)throws BaseExecuteException;
 	Food selectFoodByFoodId(Long foodId);
-	FoodExecution deletFoodByFoodId(Long FoodId)throws BaseExecuteException;
-	FoodExecution selectFoodList(Food food,int pageIndex,int pageSize);
+	BaseExecution<Food> deletFoodByFoodId(Long FoodId)throws BaseExecuteException;
+	BaseExecution<Food> selectFoodList(Food food,int pageIndex,int pageSize);
 }

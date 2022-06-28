@@ -2,7 +2,7 @@
  * @Author: error: git config user.name && git config user.email & please set dead value or install git
  * @Date: 2022-06-25 10:28:54
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-25 17:01:38
+ * @LastEditTime: 2022-06-28 14:52:19
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\DepartmentServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -18,6 +18,7 @@ import com.easyorder.entity.Department;
 
 import com.easyorder.mapper.DepartmentMapper;
 import com.easyorder.service.DeparmentService;
+import com.easyorder.util.BaseExecuteException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +34,19 @@ public class DepartmentServiceImpl implements DeparmentService{
     @Transactional
     public void updateDepartment(Department department) {
         // TODO Auto-generated method stub
-        if(department.getDepartmentId()!=null)
-        {
-            departmentMapper.updateById(department);
-        }
+        
+            try {
+                int effctedNum= departmentMapper.updateById(department);
+                if(effctedNum<=0)
+                {
+                    throw new BaseExecuteException("更新部门数据失败！");
+                }
+                throw new BaseExecuteException("更新部门数据成功！");
+            } catch (Exception e) {
+                //TODO: handle exception
+                throw new BaseExecuteException("更新部门数据失败！");
+            }
+        
         
     }
 

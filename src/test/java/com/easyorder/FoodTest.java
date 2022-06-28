@@ -12,7 +12,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Food;
+import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.service.FoodService;
 import com.google.gson.Gson;
 
@@ -27,6 +29,7 @@ public class FoodTest extends BaseTest {
 		System.out.println(fs.deletFoodByFoodId(1L).getEum().getStateInfo());
 	}
 	@Test
+	@Ignore
 	public void foodJson() {
 		Food f=new Food();
 		f.setFoodName("回锅肉");
@@ -39,13 +42,12 @@ public class FoodTest extends BaseTest {
 		
 	}
 	@Test
-	@Ignore
 	public void foodSelect() {
-		Food f=new Food();
-		f.setFoodName("回锅肉");
-		List<Food> foodList=fs.selectFoodList(f, 2, 1).getTList();
-		for(Food fd:foodList)
-			System.out.println(fd);
+		
+		BaseExecution<Food> be= fs.selectFoodByFoodId(13l);
+		if(be.getEum()==ExecuteStateEum.SUCCESS) {
+			System.out.print(be.getTemp());
+		}
 	}
 	@Test
 	@Ignore

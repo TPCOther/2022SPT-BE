@@ -28,7 +28,7 @@ public class HeadlineServiceImpl implements HeadlineService{
     @Resource
     HeadlineMapper headlineMapper;
     
-    Headline headline;
+    //Headline headline;
     @Override
     public List<Headline> getHeadlineList(Headline headline) {
         // TODO Auto-generated method stub

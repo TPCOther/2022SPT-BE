@@ -9,5 +9,6 @@ public class BaseExecuteException extends RuntimeException{
 
 	public BaseExecuteException(String msg) {
 		super(msg);
+		
 	}
 }

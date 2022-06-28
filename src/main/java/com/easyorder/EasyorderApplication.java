@@ -11,6 +11,8 @@ package com.easyorder;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.github.jeffreyning.mybatisplus.conf.EnableMPP;
 
@@ -22,5 +24,12 @@ public class EasyorderApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EasyorderApplication.class, args);
 	}
-
+	//与文件上传相关
+	@Bean("multipartResolver")
+    public CommonsMultipartResolver multipartResolver(){
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("UTF-8");
+        resolver.setMaxInMemorySize(10000);
+        return resolver;
+    }
 }

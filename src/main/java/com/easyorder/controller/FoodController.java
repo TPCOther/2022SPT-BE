@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @CrossOrigin(origins = { "*", "null" }) // 用于跨域请求，*代表允许响应所有的跨域请求
 //@SuppressWarnings("all") 用于忽略报错
 @RestController
+@RequestMapping("/food")
 public class FoodController {
 	@Resource
 	private FoodService foodService;
@@ -34,7 +36,7 @@ public class FoodController {
 	private static final int maxImg = 4;
 
 	// 查询菜品列表
-	@GetMapping("/getFoodList")
+	@GetMapping("/getfoodlist")
 	@ResponseBody
 	public RBody getFoodList(HttpServletRequest request) {
 		int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
@@ -57,6 +59,7 @@ public class FoodController {
 			if(be.getEum()==ExecuteStateEum.SUCCESS) {
 				RBody rBody = RBody.ok(be.getEum().getStateInfo());
 				rBody.data(be.getTList());
+				rBody.put("count",be.getCount());
 				return rBody;
 			}else {
 				return RBody.error(be.getEum().getStateInfo());
@@ -66,7 +69,7 @@ public class FoodController {
 	}
 
 	// 查询菜品详细信息
-	@GetMapping("/getFood")
+	@GetMapping("/getfood")
 	@ResponseBody
 	public RBody getFood(@RequestParam Long foodId) {
 		if (foodId != null && foodId > 0) {
@@ -84,7 +87,7 @@ public class FoodController {
 	}
 
 	// 添加菜品信息
-	@PostMapping("/insertFood")
+	@PostMapping("/insertfood")
 	@ResponseBody
 	public RBody insertFood(HttpServletRequest request) {
 		// 验证码
@@ -153,7 +156,7 @@ public class FoodController {
 	}
 
 	// 修改菜品信息
-	@PostMapping("/updateFood")
+	@PostMapping("/updatefood")
 	@ResponseBody
 	public RBody updateFood(HttpServletRequest request) {
 		// 验证码
@@ -214,7 +217,7 @@ public class FoodController {
 	}
 
 	// 删除菜品信息
-	@GetMapping("/deleteFood")
+	@GetMapping("/deletefood")
 	@ResponseBody
 	public RBody deleteFood(@RequestParam Long foodId) {
 		if(foodId!=null&&foodId>0) {

@@ -118,11 +118,18 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 		}
 	}
 
+	/**
+	 * 查询单条信息
+	 */
 	@Override
 	public BaseExecution<Food> selectFoodByFoodId(Long foodId) {
 		Food f;
 		try {
 			f=foodMapper.selectById(foodId);
+			QueryWrapper<FoodImg> q=new QueryWrapper<FoodImg>();
+			q.eq("food_id",foodId);
+			List<FoodImg> foodImgs=list(q);
+			f.setFoodImgList(foodImgs);
 		} catch (Exception e) {
 			return new BaseExecution<Food>(ExecuteStateEum.INNER_ERROR);
 		}

@@ -75,6 +75,14 @@
     		<artifactId>junit</artifactId>
     		<scope>test</scope>
 		</dependency>
+		<!-- jwt -->
+		<!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.18.3</version>
+		</dependency>
+
 		
 		<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
 		<!-- 文件上传有关 -->

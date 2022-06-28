@@ -12,7 +12,7 @@ public class BaseExecution<T> {
 	private List<T> TList;
 	private T temp;
 
-	private int count;
+	private Long count;
 
 	public BaseExecution() {}
 	public BaseExecution(ExecuteStateEum eum) {

@@ -33,7 +33,7 @@ public class DinTableServiceImpl implements DinTableService {
                     List<DinTable> dinTableList = dinTableMapper.getDinTableArea(wapper);
                     baseExecution.setEum(ExecuteStateEum.SUCCESS);
                     baseExecution.setTList(dinTableList);
-                    baseExecution.setCount(dinTableList.size());
+                    baseExecution.setCount(Long.valueOf(dinTableList.size()));
                     return baseExecution;
                 }catch (Exception e) {
                     throw new BaseExecuteException("查询桌台(DinTable)失败: "+e.getMessage());
@@ -50,7 +50,6 @@ public class DinTableServiceImpl implements DinTableService {
             }
             baseExecution.setEum(ExecuteStateEum.SUCCESS);
             baseExecution.setTemp(insertDinTable);
-            baseExecution.setCount(effctedNum);
             return baseExecution;
             
         }catch(Exception e){       
@@ -68,7 +67,6 @@ public class DinTableServiceImpl implements DinTableService {
             }
             baseExecution.setEum(ExecuteStateEum.SUCCESS);
             baseExecution.setTemp(updateDinTable);
-            baseExecution.setCount(effctedNum);
             return baseExecution;
             
         }catch(Exception e){       
@@ -87,7 +85,6 @@ public class DinTableServiceImpl implements DinTableService {
             }
             baseExecution.setEum(ExecuteStateEum.SUCCESS);
             baseExecution.setTemp(deleteDinTable);
-            baseExecution.setCount(effctedNum);
             return baseExecution;
             
         }catch(Exception e){       

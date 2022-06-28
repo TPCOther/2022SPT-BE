@@ -1,6 +1,5 @@
 package com.easyorder.dto;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.easyorder.enums.ExecuteStateEum;
@@ -12,8 +11,9 @@ public class BaseExecution<T> {
 	private ExecuteStateEum eum;
 	private List<T> TList;
 	private T temp;
+
 	private int count;
-	private HashMap<String, Object> TMap;
+
 	public BaseExecution() {}
 	public BaseExecution(ExecuteStateEum eum) {
 		this.eum=eum;

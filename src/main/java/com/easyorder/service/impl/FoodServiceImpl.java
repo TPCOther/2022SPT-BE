@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.dto.BaseExecution;
+import com.easyorder.dto.FoodExecution;
 import com.easyorder.entity.Food;
 import com.easyorder.entity.FoodImg;
 import com.easyorder.enums.ExecuteStateEum;
@@ -76,7 +78,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 			}
 			return new BaseExecution<Food>(ExecuteStateEum.SUCCESS);
 		} else {
-			return new BaseExecution<Food>(ExecuteStateEum.EMPTY);
+			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE);
 		}
 	}
 
@@ -103,36 +105,72 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 				deleteFoodImgList(food.getFoodId());
 				addFoodImgList(food, foodImgMap);
 			}
-			//操作数据库
+			// 操作数据库
 			try {
-				int e=foodMapper.updateById(food);
-				if(e<=0)
+				int e = foodMapper.updateById(food);
+				if (e <= 0)
 					throw new BaseExecuteException("更新菜品信息失败");
 				return new BaseExecution<Food>(ExecuteStateEum.SUCCESS);
 			} catch (Exception e) {
-				throw new BaseExecuteException("更新失败:"+e.getMessage());
+				throw new BaseExecuteException("更新失败:" + e.getMessage());
 			}
 		} else {
-			return new BaseExecution<Food>(ExecuteStateEum.EMPTY);
+			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE);
 		}
 	}
 
 	@Override
 	public Food selectFoodByFoodId(Long foodId) {
-		// TODO Auto-generated method stub
-		return null;
+		return foodMapper.selectById(foodId);
 	}
 
+	/**
+	 * 删除菜品并删除对应的图片文件和数据表信息
+	 */
 	@Override
-	public BaseExecution<Food> deletFoodByFoodId(Long FoodId) throws BaseExecuteException {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public BaseExecution<Food> deletFoodByFoodId(Long foodId) throws BaseExecuteException {
+		if (foodId != null) {
+			try {
+				Food temp = foodMapper.selectById(foodId);
+				if (temp.getFoodImg() != null) {
+					ImageUtil.deleteFile(temp.getFoodImg());
+				}
+				deleteFoodImgList(foodId);
+				ImageUtil.deleteFile(PathUtil.getFoodAllImagePath(temp));
+				int e = foodMapper.deleteById(foodId);
+				if (e <= 0) {
+					throw new BaseExecuteException("菜品不存在或者数据库操作失败");
+				}
+				return new BaseExecution<Food>(ExecuteStateEum.SUCCESS);
+			} catch (Exception e) {
+				throw new BaseExecuteException("菜品删除失败:");
+			}
+		}else {
+			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE);
+		}
 	}
 
+	/**
+	 * 菜品分页查找，支持菜品id,菜品种类id,菜品名，菜品标签查找
+	 */
 	@Override
 	public BaseExecution<Food> selectFoodList(Food food, int pageIndex, int pageSize) {
-		// TODO Auto-generated method stub
-		return null;
+		QueryWrapper<Food> q = new QueryWrapper<>();
+		q.eq(food.getFoodId() != null, "food_id", food.getFoodId());
+		q.eq(food.getCategoryId() != null, "category_id", food.getCategoryId());
+		q.like(food.getFoodName() != null, "food_name", food.getFoodName());
+		q.like(food.getFoodTag() != null, "food_tag", food.getFoodTag());
+		Page<Food> page = new Page<>(pageIndex, pageSize);
+		try {
+			foodMapper.selectPage(page, q);
+			BaseExecution<Food> be = new BaseExecution<Food>(ExecuteStateEum.SUCCESS, page.getRecords());
+			Long count = foodMapper.selectCount(q);
+			be.setCount(count);
+			return be;
+		} catch (Exception e) {
+			return new BaseExecution<Food>(ExecuteStateEum.INNER_ERROR);
+		}
 	}
 
 	/**
@@ -183,8 +221,8 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 	 * @param foodId
 	 */
 	private void deleteFoodImgList(Long foodId) {
-		QueryWrapper<FoodImg> q=new QueryWrapper<>();
-		q.eq("food_id",foodId);
+		QueryWrapper<FoodImg> q = new QueryWrapper<>();
+		q.eq("food_id", foodId);
 		List<FoodImg> foodImgList = list(q);
 		// 删除数据库记录
 		remove(q);

@@ -15,7 +15,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.dto.BaseExecution;
-import com.easyorder.dto.FoodExecution;
 import com.easyorder.entity.Food;
 import com.easyorder.entity.FoodImg;
 import com.easyorder.enums.ExecuteStateEum;
@@ -120,8 +119,15 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 	}
 
 	@Override
-	public Food selectFoodByFoodId(Long foodId) {
-		return foodMapper.selectById(foodId);
+	public BaseExecution<Food> selectFoodByFoodId(Long foodId) {
+		Food f;
+		try {
+			f=foodMapper.selectById(foodId);
+		} catch (Exception e) {
+			return new BaseExecution<Food>(ExecuteStateEum.INNER_ERROR);
+		}
+		return new BaseExecution<Food>(ExecuteStateEum.SUCCESS, f);
+		
 	}
 
 	/**
@@ -129,7 +135,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 	 */
 	@Override
 	@Transactional
-	public BaseExecution<Food> deletFoodByFoodId(Long foodId) throws BaseExecuteException {
+	public BaseExecution<Food> deletFoodByFoodId(Long foodId)  {
 		if (foodId != null) {
 			try {
 				Food temp = foodMapper.selectById(foodId);
@@ -140,11 +146,11 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 				ImageUtil.deleteFile(PathUtil.getFoodAllImagePath(temp));
 				int e = foodMapper.deleteById(foodId);
 				if (e <= 0) {
-					throw new BaseExecuteException("菜品不存在或者数据库操作失败");
+					throw new BaseExecuteException("数据库操作失败");
 				}
 				return new BaseExecution<Food>(ExecuteStateEum.SUCCESS);
 			} catch (Exception e) {
-				throw new BaseExecuteException("菜品删除失败:");
+				return new BaseExecution<Food>(ExecuteStateEum.INNER_ERROR); 
 			}
 		}else {
 			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE);

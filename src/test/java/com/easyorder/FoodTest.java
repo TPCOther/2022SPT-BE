@@ -14,16 +14,30 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.easyorder.entity.Food;
 import com.easyorder.service.FoodService;
+import com.google.gson.Gson;
 
 public class FoodTest extends BaseTest {
 	@Resource
 	FoodService fs;
-	
+	@Resource
+	Gson gson;
 	@Test 
+	@Ignore
 	public void foodDelete() {
 		System.out.println(fs.deletFoodByFoodId(1L).getEum().getStateInfo());
 	}
-	
+	@Test
+	public void foodJson() {
+		Food f=new Food();
+		f.setFoodName("回锅肉");
+		List<Food> foodList=fs.selectFoodList(f, 1, 1).getTList();
+		for(Food fd:foodList) {
+			System.out.println(fd);
+			System.out.println(gson.toJson(fd));
+		}
+			
+		
+	}
 	@Test
 	@Ignore
 	public void foodSelect() {

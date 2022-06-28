@@ -2,6 +2,7 @@ package com.easyorder.entity;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -16,9 +17,13 @@ public class DinTable {
     private Long dinTableId;
     
     private Long areaId;
+    private String dinTableName;
 
     private Integer dinTableState;
     private Integer dinTableCapacity;
+
+    @TableField(exist =false)
+    private String areaName;
     
 
 }

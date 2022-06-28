@@ -7,13 +7,14 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.entity.Area;
 import com.easyorder.mapper.AreaMapper;
 import com.easyorder.service.AreaService;
 import com.easyorder.util.BaseExecuteException;
 
 @Service
-public class AreaServiceImpl implements AreaService{
+public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements AreaService{
     @Resource
     AreaMapper areaMapper;
     /**
@@ -28,12 +29,9 @@ public class AreaServiceImpl implements AreaService{
             List<Area> areaList = areaMapper.selectList(wapper);
             return areaList;
         }catch (Exception e) {
-            throw new BaseExecuteException("查询区域(Area)失败: "+e.toString());
+            throw new BaseExecuteException("查询区域(Area)失败: "+e.getMessage());
         }
     }
-
-
-
     /**
      * 插入区域,返回插入数据ID
      */
@@ -47,7 +45,7 @@ public class AreaServiceImpl implements AreaService{
             return area.getAreaId();
             
         }catch(Exception e){       
-            throw new BaseExecuteException("创建区域(Area)失败 - 未知错误: "+e.toString());
+            throw new BaseExecuteException("创建区域(Area)失败: "+e.getMessage());
         }
     }   
     /**
@@ -58,11 +56,11 @@ public class AreaServiceImpl implements AreaService{
         try{
             int effctedNum = areaMapper.updateById(area);
             if(effctedNum <= 0){
-                throw new BaseExecuteException("更新区域(Area)失败: "+"更新0条数据");
+                throw new BaseExecuteException("更新0条数据");
             }
 
         }catch(Exception e){
-            throw new BaseExecuteException("更新区域(Area)失败: "+e.toString());
+            throw new BaseExecuteException("更新区域(Area)失败: "+e.getMessage());
         }
         
     }
@@ -78,7 +76,7 @@ public class AreaServiceImpl implements AreaService{
             }
 
         }catch(Exception e){
-            throw new BaseExecuteException("删除区域(Area)失败: "+e.toString());
+            throw new BaseExecuteException("删除区域(Area)失败 - 未知错误: "+e.getMessage());
         }
         
     }

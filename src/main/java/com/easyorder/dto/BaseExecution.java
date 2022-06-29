@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class BaseExecution<T> {
+	private String stateInfo;
 	private ExecuteStateEum eum;
 	private List<T> TList;
 	private T temp;
@@ -15,6 +16,9 @@ public class BaseExecution<T> {
 	private Long count;
 
 	public BaseExecution() {}
+	public BaseExecution(String stateinfo) {
+		stateInfo=stateinfo;
+	}
 	public BaseExecution(ExecuteStateEum eum) {
 		this.eum=eum;
 	}

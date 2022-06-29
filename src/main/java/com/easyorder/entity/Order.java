@@ -30,4 +30,6 @@ public class Order {
 	
 	@TableField(exist = false)
 	List<OrderFood> orderFoodList;
+	
+	public Order() {}
 }

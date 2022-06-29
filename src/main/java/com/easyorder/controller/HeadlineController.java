@@ -27,8 +27,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.annotation.Resource;
 
@@ -38,7 +37,6 @@ import com.easyorder.service.HeadlineService;
 import com.easyorder.util.CodeUtil;
 import com.easyorder.util.HttpServletRequestUtil;
 import com.easyorder.util.RBody;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Headline;
@@ -72,11 +70,10 @@ public class HeadlineController {
     @ResponseBody
     public RBody updateHeadline(HttpServletRequest request)
     {
-        ObjectMapper mapper=new ObjectMapper();
-        String headlineString=HttpServletRequestUtil.getString(request, "headlineString");
+        String headlineString=HttpServletRequestUtil.getString(request, "headlineStr");
         Headline headline=null;
         try {
-            headline=mapper.readValue(headlineString, Headline.class);
+            headline=gson.fromJson(headlineString, Headline.class);
         } catch (Exception e) {
             return RBody.error(e.getMessage());
         }
@@ -93,10 +90,10 @@ public class HeadlineController {
         } catch (Exception e) {
             return RBody.error("上传失败："+e.getMessage());
         }
-        if(headline.getHeadlineId()!=null)
+        if(headline!=null&&headline.getHeadlineId()!=null)
         {
             try {
-                BaseExecution<Headline> baseExecution=headlineService.updateHeadline(headline);
+                BaseExecution<Headline> baseExecution=headlineService.updateHeadline(headline,headlineImg);
             if(baseExecution.getEum().getState()==ExecuteStateEum.SUCCESS.getState())
             {
                 return RBody.ok(baseExecution.getEum().getStateInfo());
@@ -115,17 +112,16 @@ public class HeadlineController {
     public RBody insertHeadline(HttpServletRequest request)
     {
         //验证码
-        if(!CodeUtil.checkVerifyCode(request))
-        {
-            return RBody.error("验证码错误!");
-        }
+//        if(!CodeUtil.checkVerifyCode(request))
+//        {
+//            return RBody.error("验证码错误!");
+//        }
         //接受消息
-        ObjectMapper mapper=new ObjectMapper();
-        String headlineString=HttpServletRequestUtil.getString(request,"headlineString");
+        String headlineString=HttpServletRequestUtil.getString(request,"headlineStr");
         Headline headline=null;
         //将信息转化为实体类实例
         try {
-            headline=mapper.readValue(headlineString,Headline.class);
+            headline=gson.fromJson(headlineString,Headline.class);
         } catch (Exception e) {
             return RBody.error(e.getMessage());
         }
@@ -133,7 +129,6 @@ public class HeadlineController {
         //处理图片数据流
         MultipartHttpServletRequest multipartHttpServletRequest;
         CommonsMultipartFile headlineImg=null;
-        Map<CommonsMultipartFile,String> headlineImgMap=new HashMap<>();
         CommonsMultipartResolver commonsMultipartResolver=new CommonsMultipartResolver(request.getSession().getServletContext());
         try {
             //判断文件流
@@ -149,10 +144,10 @@ public class HeadlineController {
         }catch (Exception e) {
             return RBody.error("上传失败:" + e.getMessage());
         }
-        if(headline.getHeadlineId()!=null)
+        if(headline!=null)
         {
             try {
-                BaseExecution<Headline> baseExecution=headlineService.insertHeadline(headline);
+                BaseExecution<Headline> baseExecution=headlineService.insertHeadline(headline,headlineImg);
                 if(baseExecution.getEum().getState()==ExecuteStateEum.SUCCESS.getState())
                 {
                     return RBody.ok("添加成功!");
@@ -166,14 +161,10 @@ public class HeadlineController {
         return RBody.error();
     }
 
-
-
-
-
     @PostMapping("/delete")
     public RBody deleteHeadline(@RequestBody Headline headline)
     {
-        if(headline.getHeadlineId()!=null)
+        if(headline!=null&&headline.getHeadlineId()!=null)
         {
             BaseExecution<Headline> baseExecution=headlineService.deleteHeadline(headline);
             if(baseExecution.getEum().getState()==ExecuteStateEum.SUCCESS.getState())

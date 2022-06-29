@@ -20,21 +20,19 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @TableName("headline")
-public class Headline{
-    @TableId(type = IdType.AUTO)
-    private Long headlineId;
-    private String headlineName;
-    private String headlineLink;
-    private String headlineImg;
-    private Integer headlineState;
-    private Integer priority;
-    private Date createTime;
-    private Date lastEditTime;
+public class Headline {
+	@TableId(type = IdType.AUTO)
+	private Long headlineId;
+	private String headlineName;
+	private String headlineLink;
+	private String headlineImg;
+	private Integer headlineState;
+	private Integer priority;
+	private Date createTime;
+	private Date lastEditTime;
 
-    public Headline()
-    {
-        
-    }
+	public Headline() {
 
-    
+	}
+
 }

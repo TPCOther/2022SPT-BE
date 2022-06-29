@@ -56,7 +56,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 			}
 
 			// 缩略图是否存在
-			if (foodImg != null) {
+			if (foodImg != null) {   
 				try {
 					addFoodImg(food, foodImg);
 					int x = foodMapper.updateById(food);

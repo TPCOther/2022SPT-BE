@@ -80,7 +80,7 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 				Page<FoodCategory> pageScale = new Page<>(pageIndex, pageSize);
 				page(pageScale, q);
 				foodCategoryList = pageScale.getRecords();
-				Long count = count();
+				Long count = count(q);
 				be = new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS, foodCategoryList);
 				be.setCount(count);
 			} else {

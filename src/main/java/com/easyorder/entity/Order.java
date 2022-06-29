@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -27,5 +28,6 @@ public class Order {
 	Long staffId;
 	Long tableId;
 	
-	List<Food> foodList;
+	@TableField(exist = false)
+	List<OrderFood> orderFoodList;
 }

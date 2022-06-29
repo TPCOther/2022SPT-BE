@@ -21,9 +21,10 @@ import com.easyorder.util.BaseExecuteException;
 
 @Service
 public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCategory> implements FoodCategoryService {
-	
-	@Resource 
+
+	@Resource
 	FoodMapper foodMapper;
+
 	/**
 	 * 批量插入
 	 */
@@ -41,7 +42,7 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
 		}
 	}
-	
+
 	/**
 	 * 删除
 	 */
@@ -49,56 +50,65 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 	@Transactional
 	public BaseExecution<FoodCategory> deleteFoodCategory(Long foodCategoryId) {
 		try {
-			QueryWrapper<Food> q=new QueryWrapper<>();
-			q.eq("category_id",foodCategoryId);
-			int e=foodMapper.delete(q);
-			if(e<0) {
+			QueryWrapper<Food> q = new QueryWrapper<>();
+			q.eq("category_id", foodCategoryId);
+			int e = foodMapper.delete(q);
+			if (e < 0) {
 				throw new BaseExecuteException("删除相关菜品失败");
 			}
-			boolean b=removeById(foodCategoryId);
-			if(!b) {
+			boolean b = removeById(foodCategoryId);
+			if (!b) {
 				throw new BaseExecuteException("删除菜品种类失败");
 			}
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
 		}
 	}
 
 	/**
-	 * 分页查询
+	 * 如果符合条件分页查询，反之不分页
 	 */
 	@Override
-	public BaseExecution<FoodCategory> selectFoodCategoryList(String foodCategoryName,int pageSize, int pageIndex) {
+	public BaseExecution<FoodCategory> selectFoodCategoryList(String foodCategoryName, int pageSize, int pageIndex) {
 		try {
-			QueryWrapper<FoodCategory> q=new QueryWrapper<FoodCategory>();
-			q.like(foodCategoryName!=null,"food_category_name",foodCategoryName);
-			Page<FoodCategory> pageScale = new Page<>(pageIndex, pageSize);
-			page(pageScale,q);
-			List<FoodCategory> foodCategoryList = pageScale.getRecords();
-			Long count = count();
-			BaseExecution<FoodCategory> be = new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS, foodCategoryList);
-			be.setCount(count);
+			QueryWrapper<FoodCategory> q = new QueryWrapper<FoodCategory>();
+			BaseExecution<FoodCategory> be = null;
+			List<FoodCategory> foodCategoryList = null;
+			q.like(foodCategoryName != null, "food_category_name", foodCategoryName);
+			if (pageIndex > 0 && pageSize > 0) {
+				Page<FoodCategory> pageScale = new Page<>(pageIndex, pageSize);
+				page(pageScale, q);
+				foodCategoryList = pageScale.getRecords();
+				Long count = count();
+				be = new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS, foodCategoryList);
+				be.setCount(count);
+			} else {
+				foodCategoryList=list(q);
+				be = new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS, foodCategoryList);
+			}
+
 			return be;
 		} catch (Exception e) {
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
 		}
 
 	}
+
 	/**
 	 * 修改菜品种类
 	 */
 	@Override
 	public BaseExecution<FoodCategory> updateFoodCategory(FoodCategory foodCategory) {
 		try {
-			boolean b=updateById(foodCategory);
-			if(!b) {
+			boolean b = updateById(foodCategory);
+			if (!b) {
 				throw new BaseExecuteException("更新失败");
 			}
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
 		}
 	}
-	
+
 }

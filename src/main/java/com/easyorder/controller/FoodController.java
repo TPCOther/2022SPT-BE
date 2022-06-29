@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -20,7 +21,6 @@ import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Food;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.service.FoodService;
-import com.easyorder.util.CodeUtil;
 import com.easyorder.util.HttpServletRequestUtil;
 import com.easyorder.util.RBody;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,21 +28,66 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @CrossOrigin(origins = { "*", "null" }) // 用于跨域请求，*代表允许响应所有的跨域请求
 //@SuppressWarnings("all") 用于忽略报错
 @RestController
+@RequestMapping("/food")
 public class FoodController {
 	@Resource
 	private FoodService foodService;
 
 	private static final int maxImg = 4;
 
-	// 查询菜品信息
-	@GetMapping("/getFoodList")
+	// 查询菜品列表
+	@GetMapping("/getfoodlist")
 	@ResponseBody
-	public RBody getFoodList() {
-		return RBody.ok();
+	public RBody getFoodList(HttpServletRequest request) {
+		int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+		int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+		if (pageIndex > 0 && pageSize > 0) {
+			String foodName = HttpServletRequestUtil.getString(request, "foodName");
+			String foodTag = HttpServletRequestUtil.getString(request, "foodTag");
+			String categoryName = HttpServletRequestUtil.getString(request, "foodTag");
+			
+			
+			Food food = new Food();
+			food.setFoodName(foodName);
+			food.setFoodTag(foodTag);
+			// TODO 菜品种类名查询对应的id
+			/**
+			 * foodCategory=fcs.select(categoryname);
+			 * food.setCategoryId(foodcategory.getid());
+			 */
+			BaseExecution<Food> be=foodService.selectFoodList(food, pageIndex, pageSize);
+			if(be.getEum()==ExecuteStateEum.SUCCESS) {
+				RBody rBody = RBody.ok(be.getEum().getStateInfo());
+				rBody.data(be.getTList());
+				rBody.put("count",be.getCount());
+				return rBody;
+			}else {
+				return RBody.error(be.getEum().getStateInfo());
+			}
+		}
+		return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
+	}
+
+	// 查询菜品详细信息
+	@GetMapping("/getfood")
+	@ResponseBody
+	public RBody getFood(@RequestParam Long foodId) {
+		if (foodId != null && foodId > 0) {
+			BaseExecution<Food> be = foodService.selectFoodByFoodId(foodId);
+			// TODO 菜品种类的查询
+			if (be.getEum() == ExecuteStateEum.SUCCESS) {
+				RBody rBody = RBody.ok(be.getEum().getStateInfo());
+				rBody.data(be.getTemp());
+				return rBody;
+			} else {
+				return RBody.error(be.getEum().getStateInfo());
+			}
+		} else
+			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 	}
 
 	// 添加菜品信息
-	@PostMapping("/insertFood")
+	@PostMapping("/insertfood")
 	@ResponseBody
 	public RBody insertFood(HttpServletRequest request) {
 		// 验证码
@@ -111,7 +156,7 @@ public class FoodController {
 	}
 
 	// 修改菜品信息
-	@PostMapping("/updateFood")
+	@PostMapping("/updatefood")
 	@ResponseBody
 	public RBody updateFood(HttpServletRequest request) {
 		// 验证码
@@ -139,11 +184,8 @@ public class FoodController {
 			// 判断文件流
 			if (commonsMultipartResolver.isMultipart(request)) {
 				multipartHttpServletRequest = (MultipartHttpServletRequest) request;
-				foodImg = (CommonsMultipartFile) multipartHttpServletRequest.getFile("foodImg");
 				// 缩略图
-				if (foodImg == null) {
-					return RBody.error("上传失败:缩略图片文件为空");
-				}
+				foodImg = (CommonsMultipartFile) multipartHttpServletRequest.getFile("foodImg");
 				// 详情图
 				for (int i = 0; i < maxImg; i++) {
 					CommonsMultipartFile temp = (CommonsMultipartFile) multipartHttpServletRequest
@@ -154,23 +196,39 @@ public class FoodController {
 					} else
 						break;
 				}
-				if (foodImgMap.size() <= 0) {
-					return RBody.error("上传失败:详情图片文件为空");
-				}
-			} else {
-				return RBody.error("上传失败:没有找到图片文件");
 			}
 		} catch (Exception e) {
 			return RBody.error("上传失败:" + e.getMessage());
 		}
 		// 修改操作
-		return RBody.ok();
+		if (food != null && food.getFoodId() != null && food.getFoodId() > 0) {
+			try {
+				BaseExecution<Food> be = foodService.updateFood(food, foodImg, foodImgMap);
+				if (be.getEum().getState() == ExecuteStateEum.SUCCESS.getState()) {
+					return RBody.ok(be.getEum().getStateInfo());
+				} else {
+					return RBody.error(be.getEum().getStateInfo());
+				}
+			} catch (Exception e) {
+				return RBody.error(e.getMessage());
+			}
+		}
+		return RBody.error(ExecuteStateEum.INCOMPLETE.getStateInfo());
 	}
 
 	// 删除菜品信息
-	@GetMapping("deleteFood")
+	@GetMapping("/deletefood")
 	@ResponseBody
-	public RBody deleteFood() {
-		return RBody.ok();
+	public RBody deleteFood(@RequestParam Long foodId) {
+		if(foodId!=null&&foodId>0) {
+			BaseExecution<Food> be=foodService.deletFoodByFoodId(foodId);
+			if (be.getEum() == ExecuteStateEum.SUCCESS) {
+				RBody rBody = RBody.ok(be.getEum().getStateInfo());
+				return rBody;
+			} else {
+				return RBody.error(be.getEum().getStateInfo());
+			}
+		}
+		return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 	}
 }

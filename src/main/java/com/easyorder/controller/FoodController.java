@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -225,11 +226,11 @@ public class FoodController {
 	}
 
 	// 删除菜品信息
-	@GetMapping("/deletefood")
+	@PostMapping("/deletefood")
 	@ResponseBody
-	public RBody deleteFood(@RequestParam Long foodId) {
-		if (foodId != null && foodId > 0) {
-			BaseExecution<Food> be = foodService.deletFoodByFoodId(foodId);
+	public RBody deleteFood(@RequestBody Food food) {
+		if (food!=null&&food.getFoodId() != null && food.getFoodId() > 0) {
+			BaseExecution<Food> be = foodService.deletFoodByFoodId(food.getFoodId());
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				RBody rBody = RBody.ok(be.getEum().getStateInfo());
 				return rBody;

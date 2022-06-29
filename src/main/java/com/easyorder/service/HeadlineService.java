@@ -8,15 +8,19 @@
  */
 package com.easyorder.service;
 
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Headline;
 import com.easyorder.util.BaseExecuteException;
 
 public interface HeadlineService {
-    BaseExecution<Headline> selectHeadlineList(Headline headline) throws BaseExecuteException ;
-    BaseExecution<Headline> updateHeadline(Headline headline) throws BaseExecuteException;
-    BaseExecution<Headline> insertHeadline(Headline headline) throws BaseExecuteException;
-    BaseExecution<Headline> deleteHeadline(Headline headline) throws BaseExecuteException;
-    
-}
+	BaseExecution<Headline> selectHeadlineList(Headline headline) throws BaseExecuteException;
 
+	BaseExecution<Headline> updateHeadline(Headline headline,CommonsMultipartFile headlineImg) throws BaseExecuteException;
+
+	BaseExecution<Headline> insertHeadline(Headline headline,CommonsMultipartFile headlineImg) throws BaseExecuteException;
+
+	BaseExecution<Headline> deleteHeadline(Headline headline) throws BaseExecuteException;
+
+}

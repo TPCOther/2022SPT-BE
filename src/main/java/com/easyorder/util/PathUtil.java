@@ -1,6 +1,7 @@
 package com.easyorder.util;
 
 import com.easyorder.entity.Food;
+import com.easyorder.entity.Headline;
 
 /*
  * 管理文件路径
@@ -32,15 +33,19 @@ public class PathUtil {
 	 * @return
 	 */
 	public static String getFoodImagePath(Food food) {
-		String productImagePath="/upload/item/food/"+food.getFoodId()+"/product/";
-		return productImagePath.replace("/", seperator);
+		String foodImagePath="/upload/item/food/"+food.getFoodId()+"/product/";
+		return foodImagePath.replace("/", seperator);
 	}
 	public static String getFoodImageDetailPath(Food food) {
-		String productImagePath="/upload/item/food/"+food.getFoodId()+"/productdetail/";
-		return productImagePath.replace("/", seperator);
+		String foodImagePath="/upload/item/food/"+food.getFoodId()+"/productdetail/";
+		return foodImagePath.replace("/", seperator);
 	}
 	public static String getFoodAllImagePath(Food food) {
-		String productImagePath="/upload/item/food/"+food.getFoodId()+"/";
-		return productImagePath.replace("/", seperator);
+		String foodImagePath="/upload/item/food/"+food.getFoodId()+"/";
+		return foodImagePath.replace("/", seperator);
+	}
+	public static String getHeadlineImagePath(Headline headline) {
+		String headlineImagePath="/upload/item/headline/"+headline.getHeadlineId()+"/";
+		return headlineImagePath.replace("/", seperator);
 	}
 }

@@ -99,6 +99,7 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 	 * 修改菜品种类
 	 */
 	@Override
+	@Transactional
 	public BaseExecution<FoodCategory> updateFoodCategory(FoodCategory foodCategory) {
 		try {
 			boolean b = updateById(foodCategory);

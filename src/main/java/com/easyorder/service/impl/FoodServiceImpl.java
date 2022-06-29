@@ -192,9 +192,9 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 	 * @param
 	 * @param
 	 */
-	private void addFoodImg(Food food, CommonsMultipartFile productImg) {
+	private void addFoodImg(Food food, CommonsMultipartFile foodImg) {
 		String dest = PathUtil.getFoodImagePath(food);
-		String addr = ImageUtil.generateThumbnail(productImg, dest);
+		String addr = ImageUtil.generateThumbnail(foodImg, dest);
 		food.setFoodImg(addr);
 	}
 

@@ -2,7 +2,7 @@
  * @Author: error: git config user.name && git config user.email & please set dead value or install git
  * @Date: 2022-06-24 17:38:23
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-29 11:43:08
+ * @LastEditTime: 2022-06-29 15:16:14
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\HeadlineController.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -30,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServlet;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.easyorder.service.HeadlineService;
@@ -68,22 +69,49 @@ public class HeadlineController {
     }
 
     @PostMapping("/update")
-    public RBody updateHeadline(@RequestBody Headline headline)
+    @ResponseBody
+    public RBody updateHeadline(HttpServletRequest request)
     {
-        RBody rBody=new RBody();
-        //BaseExecution<Headline> baseExecution=new BaseExecution<>();
+        ObjectMapper mapper=new ObjectMapper();
+        String headlineString=HttpServletRequestUtil.getString(request, "headlineString");
+        Headline headline=null;
         try {
-            //baseExecuion=
-            headlineService.updateHeadline(headline);
-            rBody=RBody.ok();
+            headline=mapper.readValue(headlineString, Headline.class);
         } catch (Exception e) {
-            
-            rBody=RBody.error(e.toString());
+            return RBody.error(e.getMessage());
         }
-        return rBody;
+        MultipartHttpServletRequest multipartHttpServletRequest;
+        CommonsMultipartFile headlineImg=null;
+        //Map<CommonsMultipartFile,String> headlineImgMap=new HashMap<>();
+        CommonsMultipartResolver commonsMultipartResolver=new CommonsMultipartResolver(request.getSession().getServletContext());
+        try {
+            if(commonsMultipartResolver.isMultipart(request))
+            {
+                multipartHttpServletRequest=(MultipartHttpServletRequest)request;
+                headlineImg=(CommonsMultipartFile)multipartHttpServletRequest.getFile("headlineImg");
+            }
+        } catch (Exception e) {
+            return RBody.error("上传失败："+e.getMessage());
+        }
+        if(headline.getHeadlineId()!=null)
+        {
+            try {
+                BaseExecution<Headline> baseExecution=headlineService.updateHeadline(headline);
+            if(baseExecution.getEum().getState()==ExecuteStateEum.SUCCESS.getState())
+            {
+                return RBody.ok(baseExecution.getEum().getStateInfo());
+            }
+            } catch (Exception e) {
+                return RBody.error(e.getMessage());
+            }
+        }
+        return RBody.error(ExecuteStateEum.INCOMPLETE.getStateInfo());
     }
 
+
+
     @PostMapping("/insert")
+    @ResponseBody
     public RBody insertHeadline(HttpServletRequest request)
     {
         //验证码
@@ -135,6 +163,7 @@ public class HeadlineController {
                 return RBody.error(e.getMessage());
             }
         }
+        return RBody.error();
     }
 
 
@@ -144,16 +173,21 @@ public class HeadlineController {
     @PostMapping("/delete")
     public RBody deleteHeadline(@RequestBody Headline headline)
     {
-        RBody rBody=new RBody();
-        //BaseExecution<Headline> baseExecution=new BaseExecution<>();
-        try {
-            //baseExecution=
-            headlineService.deleteHeadline(headline);
-            rBody=RBody.ok();
-        } catch (Exception e) {
-            rBody=RBody.error(e.toString());
+        if(headline.getHeadlineId()!=null)
+        {
+            BaseExecution<Headline> baseExecution=headlineService.deleteHeadline(headline);
+            if(baseExecution.getEum().getState()==ExecuteStateEum.SUCCESS.getState())
+            {
+                RBody rBody=new RBody();
+                rBody=RBody.ok(baseExecution.getEum().getStateInfo());
+                return rBody;
+            }else{
+                return RBody.error(baseExecution.getEum().getStateInfo());
+            }
         }
-        return rBody ;
-       }
+        return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
+    }
+
+
 }
 

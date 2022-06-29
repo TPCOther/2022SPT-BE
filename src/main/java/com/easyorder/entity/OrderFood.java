@@ -15,4 +15,5 @@ public class OrderFood {
 	@MppMultiId
 	Long foodId;
 	Integer orderFoodState;
+	Integer orderFoodNum;
 }

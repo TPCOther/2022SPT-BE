@@ -1,5 +1,6 @@
 package com.easyorder.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -108,6 +109,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	public BaseExecution<Order> insertOrder(Order order) {
 		try {
+			order.setCreateTime(new Date());
 			order.setOrderAmount(setAmount(order.getOrderFoodList()));
 			boolean b = save(order);
 			if (!b) {

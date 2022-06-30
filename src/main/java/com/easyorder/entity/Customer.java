@@ -35,5 +35,7 @@ public class Customer {
 	private Date createTime;
 	
 	private Date lastEditTime;
+
+	public Customer(){};
 	
 }

@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("order")
+@TableName("tb_order")
 public class Order {
 	@TableId(type = IdType.AUTO)
 	Long orderId;
@@ -22,11 +22,11 @@ public class Order {
 	Integer orderAmount;
 	Date createTime;
 	Date payTime;
-	String orderEvalution;//评价
+	String orderEvaluation;//评价
 	
 	Long customerId;
 	Long staffId;
-	Long tableId;
+	Long dinTableId;
 	
 	@TableField(exist = false)
 	List<OrderFood> orderFoodList;

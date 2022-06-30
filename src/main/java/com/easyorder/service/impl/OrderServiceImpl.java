@@ -11,10 +11,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Food;
 import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
 import com.easyorder.enums.ExecuteStateEum;
-import com.easyorder.mapper.OrderFoodMapper;
+import com.easyorder.mapper.FoodMapper;
 import com.easyorder.mapper.OrderMapper;
 import com.easyorder.service.OrderFoodService;
 import com.easyorder.service.OrderService;
@@ -26,18 +27,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Resource
 	OrderFoodService orderFoodService;
 
+	@Resource
+	FoodMapper foodMapper;
+
 	/**
 	 * 查询订单
 	 */
 	@Override
-	public BaseExecution<Order> selectOrder(Order order, Long customerId, Long staffId, Long tableId, Integer pageSize,
-			Integer pageIndex) {
+	public BaseExecution<Order> selectOrder(Order order, Integer pageSize, Integer pageIndex) {
 		try {
 			QueryWrapper<Order> q = new QueryWrapper<Order>();
 			q.eq(order.getOrderId() != null, "order_id", order.getOrderId());
-			q.eq(customerId != null, "customer_id", customerId);
-			q.eq(staffId != null, "staff_id", staffId);
-			q.eq(tableId != null, "table_id", tableId);
+			q.eq(order.getCustomerId() != null, "customer_id", order.getCustomerId());
+			q.eq(order.getStaffId() != null, "staff_id", order.getStaffId());
+			q.eq(order.getDinTableId() != null, "table_id", order.getDinTableId());
 			q.eq(order.getOrderState() != null, "order_state", order.getOrderState());
 			q.orderByDesc("create_time");
 			List<Order> orderList = null;
@@ -72,15 +75,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	public BaseExecution<Order> updateOrder(Order order) {
 		try {
-			boolean b = updateById(order);
-			if (!b) {
-				throw new BaseExecuteException("修改订单失败");
-			}
+			boolean b;
 			if (order.getOrderFoodList() != null && order.getOrderFoodList().size() > 0) {
-				b = orderFoodService.updateBatchByMultiId(order.getOrderFoodList());
+				order.setOrderAmount(setAmount(order.getOrderFoodList()));
+				QueryWrapper<OrderFood> q = new QueryWrapper<OrderFood>();
+				q.eq("order_id", order.getOrderId());
+				b = orderFoodService.remove(q);
+				if (!b) {
+					throw new BaseExecuteException("删除原来订单菜品列表失败");
+				}
+				b = orderFoodService.saveBatch(order.getOrderFoodList());
 				if (!b) {
 					throw new BaseExecuteException("修改订单菜品列表失败");
 				}
+			}
+			b = updateById(order);
+			if (!b) {
+				throw new BaseExecuteException("修改订单失败");
 			}
 			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS);
 		} catch (BaseExecuteException e) {
@@ -97,6 +108,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	public BaseExecution<Order> insertOrder(Order order) {
 		try {
+			order.setOrderAmount(setAmount(order.getOrderFoodList()));
 			boolean b = save(order);
 			if (!b) {
 				throw new BaseExecuteException("添加订单失败");
@@ -108,7 +120,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if (!b) {
 				throw new BaseExecuteException("添加订单菜品列表失败");
 			}
-			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS);
+			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS, order);
 		} catch (BaseExecuteException e) {
 			return new BaseExecution<Order>(e.getMessage());
 		} catch (Exception e) {
@@ -116,4 +128,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 	}
 
+	// 计算订单金额
+	public int setAmount(List<OrderFood> orderFoods) {
+		int sum = 0;
+		for (OrderFood of : orderFoods) {
+			Food food = foodMapper.selectById(of.getFoodId());
+			if (food.getFoodPromotionPrice() < 0) {
+				sum += food.getFoodNormalPrice() * of.getOrderFoodNum();
+			} else {
+				sum += food.getFoodPromotionPrice() * of.getOrderFoodNum();
+			}
+		}
+		return sum;
+	}
 }

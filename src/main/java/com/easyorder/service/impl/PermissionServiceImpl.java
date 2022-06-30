@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 16:30:30
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-29 17:04:14
+ * @LastEditTime: 2022-06-30 16:57:07
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\PermissionServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,25 +15,29 @@ import javax.annotation.Resource;
 import com.easyorder.service.PermissionService;
 import com.easyorder.util.BaseExecuteException;
 
-import org.apache.catalina.valves.rewrite.Substitution.RewriteRuleBackReferenceElement;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.easyorder.dto.BaseExecution;
-import com.easyorder.entity.Headline;
+
 import com.easyorder.entity.Permission;
+import com.easyorder.entity.RolePermission;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.mapper.PermissionMapper;
+import com.easyorder.mapper.RolePermissionMapper;
 @Service
 public class PermissionServiceImpl implements PermissionService{
 
     @Resource
     PermissionMapper permissionMapper;
-
+    @Resource
+    RolePermissionMapper rolePermissionMapper;
     @Override
     public BaseExecution<Permission> selectPermissionList(Permission permission) throws BaseExecuteException{
-        // TODO Auto-generated method stub
+        
         QueryWrapper<Permission> wrapper=new QueryWrapper<>();
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
         Long id=permission.getPermissionId();
@@ -41,7 +45,8 @@ public class PermissionServiceImpl implements PermissionService{
         String url=permission.getPermissionUrl();
         String desc=permission.getPermissionDesc();
         Integer state=permission.getPermissionState();
-
+        
+        
         wrapper.eq(id!=null, "permission_id",id);
         wrapper.eq(StringUtils.isNotEmpty(name), "permission_name", name);
         wrapper.eq(StringUtils.isNotEmpty(url), "permission_url", url);
@@ -59,24 +64,31 @@ public class PermissionServiceImpl implements PermissionService{
         }
     }
 
+    @Transactional
     @Override
     public BaseExecution<Permission> updatePermission(Permission permission) throws BaseExecuteException{
         
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
-        try {
-            int effctedNum=permissionMapper.updateById(permission);
-        if(effctedNum<=0)
+        if(StringUtils.isNotEmpty(permission.getPermissionName())&&StringUtils.isNotEmpty(permission.getPermissionUrl()))
         {
-            throw new BaseExecuteException("更新0条信息");
-        }
-        baseExecution.setEum(ExecuteStateEum.SUCCESS);
-        baseExecution.setTemp(permission);
-        return baseExecution;
-        } catch (Exception e) {
-            throw new BaseExecuteException("更新权限(Permission)失败:"+e.getMessage());
+            try {
+                int effctedNum=permissionMapper.updateById(permission);
+            if(effctedNum<=0)
+            {
+                throw new BaseExecuteException("更新0条信息");
+            }
+            baseExecution.setEum(ExecuteStateEum.SUCCESS);
+            baseExecution.setTemp(permission);
+            return baseExecution;
+            } catch (Exception e) {
+                throw new BaseExecuteException("更新权限(Permission)失败:"+e.getMessage());
+            }
+        }else{
+            throw new BaseExecuteException("更新权限(Permission)失败:请检查name和url是否正确");
         }
     }
 
+    @Transactional
     @Override
     public BaseExecution<Permission> insertPermission(Permission permission) throws BaseExecuteException{
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
@@ -84,26 +96,44 @@ public class PermissionServiceImpl implements PermissionService{
         {
             permission.setPermissionState(1);
         }
-        try {
-            int effctedNum=permissionMapper.insert(permission);
-            if(effctedNum<=0)
-            {
-                throw new BaseExecuteException("创建0条信息");
+        if(StringUtils.isNotEmpty(permission.getPermissionName())&&StringUtils.isNotEmpty(permission.getPermissionUrl()))
+        {
+            try {
+                int effctedNum=permissionMapper.insert(permission);
+                if(effctedNum<=0)
+                {
+                    throw new BaseExecuteException("创建0条信息");
+                }
+                baseExecution.setEum(ExecuteStateEum.SUCCESS);
+                baseExecution.setTemp(permission);
+                return baseExecution;
+            } catch (Exception e) {
+                throw new BaseExecuteException("创建权限(Permission)失败:"+e.getMessage());
             }
-            baseExecution.setEum(ExecuteStateEum.SUCCESS);
-            baseExecution.setTemp(permission);
-            return baseExecution;
-        } catch (Exception e) {
-            throw new BaseExecuteException("创建权限(Permission)失败:"+e.getMessage());
+        }else{
+            throw new BaseExecuteException("创建权限(Permission)失败:请检查name和url是否正确");
         }
+        
     }
 
+    @Transactional
     @Override
     public BaseExecution<Permission> deletePermission(Permission permission) throws BaseExecuteException{
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
+            Long l=rolePermissionMapper.findRoleId(permission.getPermissionId());
+            QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
+            Long permissionId=permission.getPermissionId();
+            Long roleId=l;
+            int e=1;
+            wrapper.eq(permissionId!=null, "permission_id",permissionId);
+            wrapper.eq(roleId!=null, "role_id",roleId);
+            if(roleId!=null)
+            {
+                e=rolePermissionMapper.delete(wrapper);
+            }
             int effctedNum=permissionMapper.deleteById(permission);
-            if(effctedNum<=0)
+            if(effctedNum<=0||e<=0)
             {
                 throw new BaseExecuteException("删除0条信息");
             }

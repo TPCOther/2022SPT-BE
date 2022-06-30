@@ -52,6 +52,7 @@ public class DinTableServiceImpl implements DinTableService {
         }catch (Exception e) {
             throw new BaseExecuteException("查询桌台(DinTable)失败: "+e.getMessage());
         }
+
     }
 
     @Override

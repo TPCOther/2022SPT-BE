@@ -36,7 +36,6 @@ public class Controller {
     	x.add("testList2");
         map.put("test1","test1");
         map.put("testList",x);
-        map.put("test2",cs.findCustomerInfoById(1));
     	return map;
     }
     

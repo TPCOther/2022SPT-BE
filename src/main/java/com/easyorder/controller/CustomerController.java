@@ -9,25 +9,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.easyorder.dto.BaseExecution;
-import com.easyorder.entity.DinTable;
-import com.easyorder.service.DinTableService;
+import com.easyorder.entity.Customer;
+import com.easyorder.service.CustomerService;
 import com.easyorder.util.RBody;
+
 
 @CrossOrigin(origins = {"*","null"}) //用于跨域请求，*代表允许响应所有的跨域请求
 // @SuppressWarnings("all") 用于忽略报错
 @RestController
-@RequestMapping("/table")
-public class DinTableController {
-    
+@RequestMapping("/customer")
+public class CustomerController {
     @Resource
-    private DinTableService dinTableService;
+    private CustomerService customerService;
 
     @PostMapping("/select")
-    public RBody dinTableSelect(@RequestBody DinTable selectDinTable){
+    public RBody customerSelect(@RequestBody Customer selectTable){
         RBody rbody = new RBody();
-        BaseExecution<DinTable> be = new BaseExecution<DinTable>();
+        BaseExecution<Customer> be = new BaseExecution<Customer>();
         try{
-            be = this.dinTableService.selectDinTableList(selectDinTable);
+            be = this.customerService.selectCustomerList(selectTable);
             rbody=RBody.ok().data(be.getTList());
         }catch(Exception e){
             rbody=RBody.error(e.toString());
@@ -37,12 +37,12 @@ public class DinTableController {
 
 
     @PostMapping("/insert")
-    public RBody dinTableInsert(@RequestBody DinTable insertTable){
+    public RBody tableInsert(@RequestBody Customer insertTable){
         RBody rbody = new RBody();
-        BaseExecution<DinTable> be = new BaseExecution<DinTable>();
+        BaseExecution<Customer> be = new BaseExecution<Customer>();
         try{
-            be = this.dinTableService.insertDinTable(insertTable);
-            rbody=RBody.ok().data(be.getTemp().getDinTableId());
+            be = this.customerService.insertCustomer(insertTable);
+            rbody=RBody.ok().data(be.getTemp().getCustomerId());
         }catch(Exception e){
             rbody=RBody.error(e.toString());
         }
@@ -50,10 +50,10 @@ public class DinTableController {
     }
 
     @PostMapping("/update")
-    public RBody dinTableUpdate(@RequestBody DinTable insertTable){
+    public RBody tableUpdate(@RequestBody Customer insertTable){
         RBody rbody = new RBody();
         try{
-            this.dinTableService.updateDinTable(insertTable);
+            this.customerService.updateCustomer(insertTable);
             rbody=RBody.ok();
         }catch(Exception e){
             rbody=RBody.error(e.toString());
@@ -62,15 +62,14 @@ public class DinTableController {
     }
 
     @PostMapping("/delete")
-    public RBody dinTableDelete(@RequestBody DinTable insertTable){
+    public RBody tableDelete(@RequestBody Customer insertTable){
         RBody rbody = new RBody();
         try{
-            this.dinTableService.deleteDinTable(insertTable);
+            this.customerService.deleteCustomer(insertTable);
             rbody=RBody.ok();
         }catch(Exception e){
             rbody=RBody.error(e.toString());
         }
         return rbody;
     }
-
 }

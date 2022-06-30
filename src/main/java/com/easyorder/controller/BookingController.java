@@ -1,6 +1,9 @@
 package com.easyorder.controller;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,25 +12,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.easyorder.dto.BaseExecution;
-import com.easyorder.entity.DinTable;
-import com.easyorder.service.DinTableService;
+import com.easyorder.entity.Booking;
+import com.easyorder.service.BookingService;
+import com.easyorder.util.HttpServletRequestUtil;
 import com.easyorder.util.RBody;
 
 @CrossOrigin(origins = {"*","null"}) //用于跨域请求，*代表允许响应所有的跨域请求
 // @SuppressWarnings("all") 用于忽略报错
 @RestController
-@RequestMapping("/table")
-public class DinTableController {
-    
+@RequestMapping("/booking")
+public class BookingController {
     @Resource
-    private DinTableService dinTableService;
+    private BookingService bookingService;
+    
 
     @PostMapping("/select")
-    public RBody dinTableSelect(@RequestBody DinTable selectDinTable){
+    public RBody bookingSelect(@RequestBody Booking selectBooking){
         RBody rbody = new RBody();
-        BaseExecution<DinTable> be = new BaseExecution<DinTable>();
+        BaseExecution<Booking> be = new BaseExecution<Booking>();
         try{
-            be = this.dinTableService.selectDinTableList(selectDinTable);
+            be = this.bookingService.selectBookingList(selectBooking);
             rbody=RBody.ok().data(be.getTList());
         }catch(Exception e){
             rbody=RBody.error(e.toString());
@@ -35,14 +39,19 @@ public class DinTableController {
         return rbody;
     }
 
-
     @PostMapping("/insert")
-    public RBody dinTableInsert(@RequestBody DinTable insertTable){
+    public RBody bookingInsert(HttpServletRequest request){
         RBody rbody = new RBody();
-        BaseExecution<DinTable> be = new BaseExecution<DinTable>();
+        Booking insertBooking = new Booking();
+        BaseExecution<Booking> be = new BaseExecution<Booking>();
+        //需要传入表单
+        insertBooking.setDinTableId(HttpServletRequestUtil.getLong(request, "dinTableId"));
+        insertBooking.setBookingName(HttpServletRequestUtil.getString(request, "bookingName"));
+        insertBooking.setBookingPhone(HttpServletRequestUtil.getInt(request, "bookingPhone"));
+        insertBooking.setStartTime(new Date(HttpServletRequestUtil.getLong(request, "startTime")));
         try{
-            be = this.dinTableService.insertDinTable(insertTable);
-            rbody=RBody.ok().data(be.getTemp().getDinTableId());
+            be = this.bookingService.insertBooking(insertBooking);
+            rbody=RBody.ok().data(be.getTemp().getBookingId());
         }catch(Exception e){
             rbody=RBody.error(e.toString());
         }
@@ -50,10 +59,10 @@ public class DinTableController {
     }
 
     @PostMapping("/update")
-    public RBody dinTableUpdate(@RequestBody DinTable insertTable){
+    public RBody bookingUpdate(@RequestBody Booking insertBooking){
         RBody rbody = new RBody();
         try{
-            this.dinTableService.updateDinTable(insertTable);
+            this.bookingService.updateBooking(insertBooking);
             rbody=RBody.ok();
         }catch(Exception e){
             rbody=RBody.error(e.toString());
@@ -62,15 +71,16 @@ public class DinTableController {
     }
 
     @PostMapping("/delete")
-    public RBody dinTableDelete(@RequestBody DinTable insertTable){
+    public RBody bookingDelete(@RequestBody Booking insertBooking){
         RBody rbody = new RBody();
         try{
-            this.dinTableService.deleteDinTable(insertTable);
+            this.bookingService.deleteBooking(insertBooking);
             rbody=RBody.ok();
         }catch(Exception e){
             rbody=RBody.error(e.toString());
         }
         return rbody;
     }
+
 
 }

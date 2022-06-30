@@ -36,6 +36,5 @@ public class CustomerServiceTest {
 	}
 	@Test
 	public void testSelect() {
-		System.out.print(cs.findCustomerInfoById(1));
 	}
 }

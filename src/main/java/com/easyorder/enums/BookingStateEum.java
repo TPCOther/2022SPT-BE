@@ -1,7 +1,7 @@
 package com.easyorder.enums;
 
 public enum BookingStateEum {
-	CANCEL(0,"已取消"),Booking(1,"已预定"),COMPLETE(2,"已完成");
+	CANCEL(0,"已取消"),BOOKING(1,"已预定"),COMPLETE(2,"已完成"),INVALID(3,"已失效");
 	private int state;
 	private String stateInfo;
 

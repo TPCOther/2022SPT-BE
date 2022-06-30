@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -12,7 +13,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@TableName("order")
+@TableName("tb_order")
 public class Order {
 	@TableId(type = IdType.AUTO)
 	Long orderId;
@@ -21,11 +22,14 @@ public class Order {
 	Integer orderAmount;
 	Date createTime;
 	Date payTime;
-	String orderEvalution;//评价
+	String orderEvaluation;//评价
 	
 	Long customerId;
 	Long staffId;
-	Long tableId;
+	Long dinTableId;
 	
-	List<Food> foodList;
+	@TableField(exist = false)
+	List<OrderFood> orderFoodList;
+	
+	public Order() {}
 }

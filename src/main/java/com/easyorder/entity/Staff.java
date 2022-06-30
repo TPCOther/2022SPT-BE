@@ -26,6 +26,9 @@ public class Staff {
     private Integer staffState;
     private String staffAccount;
     private String staffPassword;
-    
+    public Staff()
+    {
+        
+    }
     
 }

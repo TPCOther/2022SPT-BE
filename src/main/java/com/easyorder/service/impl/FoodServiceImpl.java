@@ -56,7 +56,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 			}
 
 			// 缩略图是否存在
-			if (foodImg != null) {
+			if (foodImg != null) {   
 				try {
 					addFoodImg(food, foodImg);
 					int x = foodMapper.updateById(food);
@@ -118,9 +118,23 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 		}
 	}
 
+	/**
+	 * 查询单条信息
+	 */
 	@Override
-	public Food selectFoodByFoodId(Long foodId) {
-		return foodMapper.selectById(foodId);
+	public BaseExecution<Food> selectFoodByFoodId(Long foodId) {
+		Food f;
+		try {
+			f=foodMapper.selectById(foodId);
+			QueryWrapper<FoodImg> q=new QueryWrapper<FoodImg>();
+			q.eq("food_id",foodId);
+			List<FoodImg> foodImgs=list(q);
+			f.setFoodImgList(foodImgs);
+		} catch (Exception e) {
+			return new BaseExecution<Food>(ExecuteStateEum.INNER_ERROR);
+		}
+		return new BaseExecution<Food>(ExecuteStateEum.SUCCESS, f);
+		
 	}
 
 	/**
@@ -128,7 +142,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 	 */
 	@Override
 	@Transactional
-	public BaseExecution<Food> deletFoodByFoodId(Long foodId) throws BaseExecuteException {
+	public BaseExecution<Food> deletFoodByFoodId(Long foodId)  {
 		if (foodId != null) {
 			try {
 				Food temp = foodMapper.selectById(foodId);
@@ -139,11 +153,11 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 				ImageUtil.deleteFile(PathUtil.getFoodAllImagePath(temp));
 				int e = foodMapper.deleteById(foodId);
 				if (e <= 0) {
-					throw new BaseExecuteException("菜品不存在或者数据库操作失败");
+					throw new BaseExecuteException("数据库操作失败");
 				}
 				return new BaseExecution<Food>(ExecuteStateEum.SUCCESS);
 			} catch (Exception e) {
-				throw new BaseExecuteException("菜品删除失败:");
+				return new BaseExecution<Food>(ExecuteStateEum.INNER_ERROR); 
 			}
 		}else {
 			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE);
@@ -178,9 +192,9 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 	 * @param
 	 * @param
 	 */
-	private void addFoodImg(Food food, CommonsMultipartFile productImg) {
+	private void addFoodImg(Food food, CommonsMultipartFile foodImg) {
 		String dest = PathUtil.getFoodImagePath(food);
-		String addr = ImageUtil.generateThumbnail(productImg, dest);
+		String addr = ImageUtil.generateThumbnail(foodImg, dest);
 		food.setFoodImg(addr);
 	}
 

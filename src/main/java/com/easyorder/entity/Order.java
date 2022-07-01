@@ -19,7 +19,7 @@ public class Order {
 	Long orderId;
 	String orderDesc;
 	Integer orderState;
-	Integer orderAmount;
+	Float orderAmount;
 	Date createTime;
 	Date payTime;
 	String orderEvaluation;//评价

@@ -83,11 +83,14 @@ public class FoodController {
 	public RBody getFood(@RequestParam Long foodId) {
 		if (foodId != null && foodId > 0) {
 			BaseExecution<Food> be = foodService.selectFoodByFoodId(foodId);
+			if(be.getTemp()==null) {
+				return RBody.ok("查询结果为空").data(be.getTemp());
+			}
 			FoodCategory foodCategory=foodCategoryService.getById(be.getTemp().getCategoryId());
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				RBody rBody = RBody.ok(be.getEum().getStateInfo());
 				rBody.data(be.getTemp());
-				rBody.put("foodCategoryName",foodCategory);
+				rBody.put("foodCategoryName",foodCategory.getFoodCategoryName());
 				return rBody;
 			} else {
 				return RBody.error(be.getEum().getStateInfo());

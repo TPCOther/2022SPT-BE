@@ -12,10 +12,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Customer;
 import com.easyorder.entity.Food;
 import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
+import com.easyorder.enums.CustomerVipEum;
 import com.easyorder.enums.ExecuteStateEum;
+import com.easyorder.mapper.CustomerMapper;
 import com.easyorder.mapper.FoodMapper;
 import com.easyorder.mapper.OrderMapper;
 import com.easyorder.service.OrderFoodService;
@@ -31,6 +34,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Resource
 	FoodMapper foodMapper;
 
+	@Resource
+	CustomerMapper customerMapper;
 	/**
 	 * 查询订单
 	 */
@@ -78,7 +83,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		try {
 			boolean b;
 			if (order.getOrderFoodList() != null && order.getOrderFoodList().size() > 0) {
-				order.setOrderAmount(setAmount(order.getOrderFoodList()));
+				Customer customer=customerMapper.selectById(order.getCustomerId());
+				order.setOrderAmount(setAmount(order.getOrderFoodList(),customer.getCustomerVip()==CustomerVipEum.VIP.getState()));
 				QueryWrapper<OrderFood> q = new QueryWrapper<OrderFood>();
 				q.eq("order_id", order.getOrderId());
 				b = orderFoodService.remove(q);
@@ -109,8 +115,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	public BaseExecution<Order> insertOrder(Order order) {
 		try {
+			Customer customer=customerMapper.selectById(order.getCustomerId());
 			order.setCreateTime(new Date());
-			order.setOrderAmount(setAmount(order.getOrderFoodList()));
+			order.setOrderAmount(setAmount(order.getOrderFoodList(),customer.getCustomerVip()==CustomerVipEum.VIP.getState()));
 			boolean b = save(order);
 			if (!b) {
 				throw new BaseExecuteException("添加订单失败");
@@ -131,8 +138,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	// 计算订单金额
-	public int setAmount(List<OrderFood> orderFoods) {
-		int sum = 0;
+	public Float setAmount(List<OrderFood> orderFoods,Boolean VIP) {
+		Float sum = 0f;
 		for (OrderFood of : orderFoods) {
 			Food food = foodMapper.selectById(of.getFoodId());
 			if (food.getFoodPromotionPrice() < 0) {
@@ -141,6 +148,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				sum += food.getFoodPromotionPrice() * of.getOrderFoodNum();
 			}
 		}
-		return sum;
+		if(VIP) sum*=0.88f;
+		
+		return Float.valueOf(String.format(".2f%",sum));
 	}
 }

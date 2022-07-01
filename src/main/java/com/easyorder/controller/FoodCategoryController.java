@@ -103,6 +103,11 @@ public class FoodCategoryController {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 		}
 	}
+	/**
+	 * 修改
+	 * @param foodCategory
+	 * @return
+	 */
 	@PostMapping("/updatefoodcategory")
 	@ResponseBody
 	public RBody updateFoodCategory(@RequestBody FoodCategory foodCategory) {

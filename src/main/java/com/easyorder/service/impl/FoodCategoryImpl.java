@@ -77,6 +77,7 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 	public BaseExecution<FoodCategory> selectFoodCategoryList(String foodCategoryName, int pageSize, int pageIndex) {
 		try {
 			QueryWrapper<FoodCategory> q = new QueryWrapper<FoodCategory>();
+			q.orderByDesc("priority");
 			BaseExecution<FoodCategory> be = null;
 			List<FoodCategory> foodCategoryList = null;
 			q.like(foodCategoryName != null, "food_category_name", foodCategoryName);

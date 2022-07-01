@@ -32,7 +32,7 @@ public class OrderTest extends BaseTest {
 		o.setOrderEvaluation("test2");
 		o.setOrderState(1);
 		o.setStaffId(1L);
-		o.setOrderAmount(10);
+		o.setOrderAmount(10f);
 		List<OrderFood> l=new ArrayList<>();
 		l.add(new OrderFood(null, 3L, 1, 1));
 		l.add(new OrderFood(null, 2L, 1, 1));
@@ -56,7 +56,7 @@ public class OrderTest extends BaseTest {
 		o.setOrderEvaluation("test2");
 		o.setOrderState(1);
 		o.setStaffId(1L);
-		o.setOrderAmount(10);
+		o.setOrderAmount(10f);
 		List<OrderFood> l=new ArrayList<>();
 		l.add(new OrderFood(7L, 3L, 1,2));
 		l.add(new OrderFood(7L, 2L, 1, 3));

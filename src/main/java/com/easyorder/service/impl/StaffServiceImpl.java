@@ -1,85 +1,176 @@
-// /*
-//  * @Author: 123456 2373464672@qq.com
-//  * @Date: 2022-06-28 15:00:54
-//  * @LastEditors: 123456 2373464672@qq.com
-//  * @LastEditTime: 2022-06-28 15:27:41
-//  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\StaffServiceImpl.java
-//  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
-//  */
-// package com.easyorder.service.impl;
+/*
+ * @Author: 123456 2373464672@qq.com
+ * @Date: 2022-06-28 15:00:54
+ * @LastEditors: 123456 2373464672@qq.com
+ * @LastEditTime: 2022-07-01 10:24:11
+ * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\StaffServiceImpl.java
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+package com.easyorder.service.impl;
 
-// import java.util.List;
+import java.util.List;
 
-// import javax.annotation.Resource;
+import javax.annotation.Resource;
 
-// import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-// import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-// import com.easyorder.entity.Staff;
-// import com.easyorder.mapper.StaffMapper;
-// import com.easyorder.service.StaffService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Staff;
+import com.easyorder.enums.ExecuteStateEum;
+import com.easyorder.mapper.RolePermissionMapper;
+import com.easyorder.mapper.StaffMapper;
+import com.easyorder.service.StaffService;
+import com.easyorder.util.BaseExecuteException;
 
-// public class StaffServiceImpl implements StaffService{
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+@Service
+public class StaffServiceImpl implements StaffService{
 
-//     @Resource 
-//     StaffMapper staffMapper;
+    @Resource 
+    StaffMapper staffMapper;
 
-//     @Override
-//     public List<Staff> getStaffList(Staff staff) {
-//         // TODO Auto-generated method stub
-//         QueryWrapper<Staff> wrapper=new QueryWrapper<>();
-//         Long staffId=staff.getStaffId();
-//         Long departmentId=staff.getDepartmentId();
-//         Long roleId=staff.getRoleId();
-//         String name=staff.getStaffName();
-//         String gender=staff.getStaffName();
-//         Integer salary=staff.getStaffSalary();
-//         String position=staff.getStaffPosition();
-//         Integer phone=staff.getStaffPhone();
-//         String address=staff.getStaffAddress();
-//         Integer state=staff.getStaffState();
-
-//         wrapper.eq(staffId!=null,"staff_id",staffId);
-//         wrapper.eq(departmentId!=null,"staff_id",departmentId);
-//         wrapper.eq(roleId!=null,"staff_id",roleId);
-//         wrapper.eq(StringUtils.isNotEmpty(name),"staff_name",name);
-//         wrapper.eq(StringUtils.isNotEmpty(gender),"staff_gender",gender);
-//         wrapper.eq(salary!=null,"staff_salary",salary);
-//         wrapper.eq(StringUtils.isNotEmpty(position),"staff_position",position);
-//         wrapper.eq(phone!=null,"staff_phone",phone);
-//         wrapper.eq(StringUtils.isNotEmpty(address),"staff_address",address);
-//         wrapper.eq(state!=null,"staff_state",state);
-        
-//         List<Staff> staffs=staffMapper.selectList(wrapper);
-//         return staffs;
-//     }
-
-//     @Override
-//     public void updateStaff(Staff staff) {
-//         // TODO Auto-generated method stub
-//         if(staff.getStaffId()!=null)
-//         {
-//             staffMapper.updateById(staff);
-//         }
-//     }
-
-//     @Override
-//     public void insertStaff(Staff staff) {
-//         // TODO Auto-generated method stub
-//         if(staff.getStaffId()!=null)
-//         {
-//             staffMapper.insert(staff);
-//         }
-        
-//     }
-
-//     @Override
-//     public void deleteStaff(Staff staff) {
-//         // TODO Auto-generated method stub
-//         if(staff.getStaffId()!=null)
-//         {
-//             staffMapper.deleteById(staff);
-//         }
-        
-//     }
+    @Resource
+    RolePermissionMapper rolePermissionMapper;
     
-// }
+    @Override
+    public BaseExecution<Staff> selectStaffList(Staff staff) throws BaseExecuteException{
+        QueryWrapper<Staff> wrapper=new QueryWrapper<>();
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        Long staffId=staff.getStaffId();
+        Long departmentId=staff.getDepartmentId();
+        Long roleId=staff.getRoleId();
+        String name=staff.getStaffName();
+        String gender=staff.getStaffName();
+        Integer salary=staff.getStaffSalary();
+        String position=staff.getStaffPosition();
+        Integer phone=staff.getStaffPhone();
+        String address=staff.getStaffAddress();
+        Integer state=staff.getStaffState();
+        String account=staff.getStaffAccount();
+        String passward=staff.getStaffPassword();
+        
+        wrapper.eq(staffId!=null,"staff_id",staffId);
+        wrapper.eq(departmentId!=null,"staff_id",departmentId);
+        wrapper.eq(roleId!=null,"staff_id",roleId);
+        wrapper.eq(StringUtils.isNotEmpty(name),"staff_name",name);
+        wrapper.eq(StringUtils.isNotEmpty(gender),"staff_gender",gender);
+        wrapper.eq(salary!=null,"staff_salary",salary);
+        wrapper.eq(StringUtils.isNotEmpty(position),"staff_position",position);
+        wrapper.eq(phone!=null,"staff_phone",phone);
+        wrapper.eq(StringUtils.isNotEmpty(address),"staff_address",address);
+        wrapper.eq(state!=null,"staff_state",state);
+        wrapper.eq(StringUtils.isNotEmpty(account), "staff_account", account);
+        wrapper.eq(StringUtils.isNotEmpty(passward), "staff_passward", passward);
+
+        try {
+            List<Staff> staffs=staffMapper.selectList(wrapper);
+            baseExecution.setEum(ExecuteStateEum.SUCCESS);
+            baseExecution.setTList(staffs);
+            baseExecution.setCount(Long.valueOf(staffs.size()));
+            return baseExecution;
+
+        } catch (Exception e) {
+            throw new BaseExecuteException("查询员工(staff)失败:"+e.getMessage());
+        }
+    }
+
+    @Override
+    public BaseExecution<Staff> updateStaff(Staff staff) throws BaseExecuteException{
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        //TODO:员工更新信息为空判断
+        if(StringUtils.isNotEmpty(staff.getStaffName())&&StringUtils.isNotEmpty(staff.getStaffGender())
+        &&staff.getStaffSalary()!=null&&StringUtils.isNotEmpty(staff.getStaffPosition())&&staff.getStaffPhone()!=null
+        &&StringUtils.isNotEmpty(staff.getStaffAccount())&&StringUtils.isNotEmpty(staff.getStaffPassword()))
+        {
+            try {
+                int effctedNum=staffMapper.updateById(staff);
+            if(effctedNum<=0)
+            {
+                throw new BaseExecuteException("更新0条信息");
+            }
+            baseExecution.setEum(ExecuteStateEum.SUCCESS);
+            baseExecution.setTemp(staff);
+            return baseExecution;
+            } catch (Exception e) {
+                throw new BaseExecuteException("更新员工(staff)失败:"+e.getMessage());
+            }
+        }else{
+            throw new BaseExecuteException("更新员工(staff)失败:请检查name、gender、salary、position、phone、account、password是否正确");
+        }
+    }
+
+    @Transactional
+    @Override
+    public BaseExecution<Staff> insertStaff(Staff staff) throws BaseExecuteException{
+        
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        if(staff.getStaffState()==null)
+        {
+            staff.setStaffState(1);
+        }
+        Long long1=staffMapper.findDepartmentIdByDepartmentId(staff.getDepartmentId());
+        
+        Long long2=staffMapper.findRoleIdByRoleId(staff.getRoleId());
+        if(long1!=null&&long2!=null)
+        {
+            // Boolean n=StringUtils.isNotEmpty(staff.getStaffName());
+            // Boolean g=StringUtils.isNotEmpty(staff.getStaffGender());
+            // int s=staff.getStaffSalary();
+            // Boolean p=StringUtils.isNotEmpty(staff.getStaffPosition());
+            // int p1=staff.getStaffPhone();
+            // Boolean a=StringUtils.isNotEmpty(staff.getStaffAccount());
+            // Boolean pas=StringUtils.isNotEmpty(staff.getStaffPassword());
+            // System.out.println(n);
+            // System.out.println(g);
+            // System.out.println(s);
+            // System.out.println(p);
+            // System.out.println(p1);
+            // System.out.println(a);
+            // System.out.println(pas);
+            if(StringUtils.isNotEmpty(staff.getStaffName())&&StringUtils.isNotEmpty(staff.getStaffGender())
+            &&staff.getStaffSalary()!=null&&StringUtils.isNotEmpty(staff.getStaffPosition())&&staff.getStaffPhone()!=null
+            &&StringUtils.isNotEmpty(staff.getStaffAccount())&&StringUtils.isNotEmpty(staff.getStaffPassword()))
+            {
+                try {
+                    int effctedNum=staffMapper.insert(staff);
+                    if(effctedNum<=0)
+                    {
+                        throw new BaseExecuteException("创建0条信息");
+                    }
+                    baseExecution.setEum(ExecuteStateEum.SUCCESS);
+                    baseExecution.setTemp(staff);
+                    return baseExecution;
+                } catch (Exception e) {
+                    throw new BaseExecuteException("创建员工(staff)失败:"+e.getMessage());
+                }
+            }else{
+                throw new BaseExecuteException("创建员工(staff)失败:请检查name、gender、salary、position、phone是否正确");
+            }
+        }else{
+            throw new BaseExecuteException("创建员工(staff)失败:请检查role_id,department_id是否存在");
+        }   
+        
+    }
+
+    // @Override
+    // public BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException{
+        
+        
+    //     BaseExecution<Staff> baseExecution=new BaseExecution<>();
+    //     try {
+    //         int effctedNum=staffMapper.deleteById(staff);
+    //         if(effctedNum<=0)
+    //         {
+    //             throw new BaseExecuteException("删除0条信息");
+    //         }
+    //         baseExecution.setEum(ExecuteStateEum.SUCCESS);
+    //         baseExecution.setTemp(staff);
+    //         return baseExecution;
+    //     } catch (Exception e) {
+    //         throw new BaseExecuteException("删除员工(staff)失败:"+e.getMessage());
+    //     }
+        
+    // }
+    
+}

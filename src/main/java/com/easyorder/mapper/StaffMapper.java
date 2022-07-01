@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 11:35:07
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-30 15:05:27
+ * @LastEditTime: 2022-07-01 10:06:58
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\mapper\StaffMapper.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -22,7 +22,15 @@ public interface StaffMapper extends BaseMapper<Staff>{
     @Select("SELECT staff.staff_id "+"FROM staff,department "+" WHERE staff.department_id=#{id} "+"AND staff.department_id=department.department_id")
     Long findStaffIdByDepartmentId(@Param("id")Long id);
 
-    // @Select("SELECT staff.staff_id "+"FROM staff,department "+" WHERE staff.department_id=#{id} "+"AND staff.department_id=department.department_id")
-    // Long findStaffIdByDepartmentId(@Param("id")Long id);
+    @Select("SELECT department.department_id "+"FROM department "+" WHERE department.department_id=#{id} ")
+    Long findDepartmentIdByDepartmentId(@Param("id")Long id);
 
+    @Select("SELECT role.role_id "+"FROM role "+" WHERE role.role_id=#{id} ")
+    Long findRoleIdByRoleId(@Param("id")Long id);
+
+    @Select("SELECT staff.department_id "+"FROM staff"+" WHERE staff.staff_id=#{id} ")
+    Long findDepartmentIdByStaffId(@Param("id")Long id);
+
+    @Select("SELECT staff.role_id "+"FROM staff"+" WHERE staff.staff_id=#{id} ")
+    Long findRoleIdByStaffId(@Param("id")Long id);
 }

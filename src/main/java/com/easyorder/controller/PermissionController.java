@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 16:43:30
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-29 15:57:35
+ * @LastEditTime: 2022-07-01 15:50:05
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\PermissionController.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -50,9 +50,10 @@ public class PermissionController {
     public RBody updatePermission(@RequestBody Permission permission)
     {
         RBody rBody=new RBody();
-        BaseExecution<Permission> baseExecution=new BaseExecution<>();
+        //BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
-            baseExecution=this.permissionService.updatePermission(permission);
+            //baseExecution=
+            this.permissionService.updatePermission(permission);
             rBody=RBody.ok();
         } catch (Exception e) {
             rBody=RBody.error(e.toString());
@@ -75,12 +76,13 @@ public class PermissionController {
     }
 
     @PostMapping("/delete")
-    public RBody deleteHeadline(@RequestBody Permission permission)
+    public RBody deletePermission(@RequestBody Permission permission)
     {
         RBody rBody=new RBody();
-        BaseExecution<Permission> baseExecution=new BaseExecution<>();
+        //BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
-            baseExecution=this.permissionService.deletePermission(permission);
+            //baseExecution=
+            this.permissionService.deletePermission(permission);
             rBody=RBody.ok();
         } catch (Exception e) {
             rBody=RBody.error(e.toString());

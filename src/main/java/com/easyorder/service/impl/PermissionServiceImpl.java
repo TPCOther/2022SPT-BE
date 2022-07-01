@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 16:30:30
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-30 16:57:07
+ * @LastEditTime: 2022-07-01 17:30:35
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\PermissionServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -67,7 +67,7 @@ public class PermissionServiceImpl implements PermissionService{
     @Transactional
     @Override
     public BaseExecution<Permission> updatePermission(Permission permission) throws BaseExecuteException{
-        
+        //TODO:权限更新数据为空判断
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
         if(StringUtils.isNotEmpty(permission.getPermissionName())&&StringUtils.isNotEmpty(permission.getPermissionUrl()))
         {
@@ -121,7 +121,7 @@ public class PermissionServiceImpl implements PermissionService{
     public BaseExecution<Permission> deletePermission(Permission permission) throws BaseExecuteException{
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
-            Long l=rolePermissionMapper.findRoleId(permission.getPermissionId());
+            Long l=rolePermissionMapper.findRoleIdByPermissionId(permission.getPermissionId());
             QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
             Long permissionId=permission.getPermissionId();
             Long roleId=l;

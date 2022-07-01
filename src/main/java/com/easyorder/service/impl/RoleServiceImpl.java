@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 15:46:17
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-30 16:48:34
+ * @LastEditTime: 2022-07-01 17:37:58
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\RoleServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -16,10 +16,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Role;
+import com.easyorder.entity.RoleMenu;
 import com.easyorder.entity.RolePermission;
 import com.easyorder.entity.Staff;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.mapper.RoleMapper;
+import com.easyorder.mapper.RoleMenuMapper;
 import com.easyorder.mapper.RolePermissionMapper;
 import com.easyorder.mapper.StaffMapper;
 import com.easyorder.service.RoleService;
@@ -36,6 +38,9 @@ public class RoleServiceImpl implements RoleService{
     StaffMapper staffMapper;
     @Resource
     RolePermissionMapper rolePermissionMapper;
+    @Resource
+    RoleMenuMapper roleMenuMapper;
+
     @Override
     public BaseExecution<Role> selectRoleList(Role role) throws BaseExecuteException{
         
@@ -65,6 +70,7 @@ public class RoleServiceImpl implements RoleService{
     @Override
     public BaseExecution<Role> updateRole(Role role) throws BaseExecuteException{
         BaseExecution<Role> baseExecution=new BaseExecution<>();
+        //TODO:角色更新为空判断
         if(StringUtils.isNotEmpty(role.getRoleName()))
         {
             try {
@@ -120,23 +126,35 @@ public class RoleServiceImpl implements RoleService{
             Long roleId=role.getRoleId();
             Long staffId=l;
             wrapper.eq(staffId!=null, "staff_id",staffId);
-            Long l2=rolePermissionMapper.findPermissionId(role.getRoleId());
+            Long l2=rolePermissionMapper.findPermissionIdByRoleId(role.getRoleId());
             QueryWrapper<RolePermission> wrapper2=new QueryWrapper<>();
             Long permissionId=l2;
             wrapper2.eq(permissionId!=null, "permission_id",permissionId);
             wrapper2.eq(roleId!=null, "role_id",roleId);
+
+            Long l3=roleMenuMapper.findControllerMenuIdByRoleId(role.getRoleId());
+            QueryWrapper<RoleMenu> wrapper3=new QueryWrapper<>();
+            Long controllerMenuId=l3;
+            wrapper3.eq(roleId!=null, "role_id", roleId);
+            wrapper3.eq(controllerMenuId!=null, "controller_menu_id", controllerMenuId);
             int e=1;
             int e2=1;
+            int e3=1;
             if(staffId!=null)
             {
                 e=staffMapper.deleteById(staffId);
-            }else if(permissionId!=null)
+            }
+            if(permissionId!=null)
             {
                 e2=rolePermissionMapper.delete(wrapper2);
             }
+            if(controllerMenuId!=null)
+            {
+                e3=roleMenuMapper.delete(wrapper3);
+            }
             int effctedNum=roleMapper.deleteById(role);
 
-            if(e<=0||e2<=0||effctedNum<=0)
+            if(e<=0||e2<=0||e3<=0||effctedNum<=0)
             {
                 throw new BaseExecuteException("删除0条信息");
             }

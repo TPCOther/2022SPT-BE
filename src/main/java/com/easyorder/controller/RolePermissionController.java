@@ -1,18 +1,29 @@
 /*
  * @Author: 123456 2373464672@qq.com
+ * @Date: 2022-07-01 08:54:19
+ * @LastEditors: 123456 2373464672@qq.com
+ * @LastEditTime: 2022-07-01 16:29:11
+ * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\RolePermissionController.java
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+/*
+ * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-29 16:52:59
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-06-30 11:37:04
+ * @LastEditTime: 2022-07-01 14:57:24
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\RolePermissionController.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 package com.easyorder.controller;
 
+
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.RolePermission;
 import com.easyorder.service.RolePermissionService;
+
 import com.easyorder.util.RBody;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -45,11 +56,12 @@ public class RolePermissionController {
 
 
     @PostMapping("/insert")
-    public RBody tableInsert(@RequestBody RolePermission rolePermission){
+    public RBody insertRolePermission(@RequestBody RolePermission rolePermission){
         RBody rbody = new RBody();
-        BaseExecution<RolePermission> baseExecution = new BaseExecution<>();
+        // = new BaseExecution<>();
         try{
-            baseExecution = this.rolePermissionService.insertRolePermission(rolePermission);
+            //baseExecution = 
+            this.rolePermissionService.insertRolePermission(rolePermission);
             rbody=RBody.ok();
         }catch(Exception e){
             rbody=RBody.error(e.toString());
@@ -57,25 +69,28 @@ public class RolePermissionController {
         return rbody;
     }
 
-    // @PostMapping("/update")
-    // public RBody tableUpdate(@RequestBody RolePermission rolePermission){
-    //     RBody rbody = new RBody();
-    //     BaseExecution<RolePermission> baseExecution = new BaseExecution<>();
-    //     try{
-    //         baseExecution = this.rolePermissionService.updateRolePermission(rolePermission);
-    //         rbody=RBody.ok();
-    //     }catch(Exception e){
-    //         rbody=RBody.error(e.toString());
-    //     }
-    //     return rbody;
-    // }
+    @PostMapping("/update")
+    public RBody updateRolePermission(HttpServletRequest request){
+        
+        RBody rbody = new RBody();
+        //BaseExecution<RolePermission> baseExecution = new BaseExecution<>();
+        try{
+            //baseExecution = 
+            this.rolePermissionService.updateRolePermission(request);
+            rbody=RBody.ok();
+        }catch(Exception e){
+            rbody=RBody.error(e.toString());
+        }
+        return rbody;
+    }
 
     @PostMapping("/delete")
-    public RBody tableDelete(@RequestBody RolePermission rolePermission){
+    public RBody deleteRolePermission(@RequestBody RolePermission rolePermission){
         RBody rbody = new RBody();
-        BaseExecution<RolePermission> baseExecution = new BaseExecution<>();
+        //BaseExecution<RolePermission> baseExecution = new BaseExecution<>();
         try{
-            baseExecution = this.rolePermissionService.deleteRolePermission(rolePermission);
+            //baseExecution = 
+            this.rolePermissionService.deleteRolePermission(rolePermission);
             rbody=RBody.ok();
         }catch(Exception e){
             rbody=RBody.error(e.toString());

@@ -26,7 +26,7 @@ public class DinTableController {
     private DinTableService dinTableService;
 
     @PostMapping("/select")
-    @RequiresPermissions("dinTable:view")
+    @RequiresPermissions("dinTable:select")
     @RequiresRoles(value={"admin","customer"},logical = Logical.OR)
     public RBody dinTableSelect(@RequestBody DinTable selectDinTable){
         RBody rbody = new RBody();
@@ -42,6 +42,7 @@ public class DinTableController {
 
 
     @PostMapping("/insert")
+    // @RequiresPermissions("dinTable:insert")
     public RBody dinTableInsert(@RequestBody DinTable insertTable){
         RBody rbody = new RBody();
         BaseExecution<DinTable> be = new BaseExecution<DinTable>();

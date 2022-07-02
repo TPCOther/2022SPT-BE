@@ -37,9 +37,11 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 			if (b)
 				return new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS);
 			else
-				throw new BaseExecuteException("操作失败");
-		} catch (Exception e) {
-			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
+				throw new BaseExecuteException("插入操作失败");
+		} catch (BaseExecuteException e) {
+			return new BaseExecution<FoodCategory>(e.getMessage());
+		}catch (Exception e) {
+			return new BaseExecution<FoodCategory>("未知错误");
 		}
 	}
 
@@ -61,8 +63,10 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 				throw new BaseExecuteException("删除菜品种类失败");
 			}
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS);
-		} catch (Exception e) {
-			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
+		} catch (BaseExecuteException e) {
+			return new BaseExecution<FoodCategory>(e.getMessage());
+		}catch (Exception e) {
+			return new BaseExecution<FoodCategory>("未知错误");
 		}
 	}
 
@@ -73,6 +77,7 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 	public BaseExecution<FoodCategory> selectFoodCategoryList(String foodCategoryName, int pageSize, int pageIndex) {
 		try {
 			QueryWrapper<FoodCategory> q = new QueryWrapper<FoodCategory>();
+			q.orderByDesc("priority");
 			BaseExecution<FoodCategory> be = null;
 			List<FoodCategory> foodCategoryList = null;
 			q.like(foodCategoryName != null, "food_category_name", foodCategoryName);
@@ -80,17 +85,16 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 				Page<FoodCategory> pageScale = new Page<>(pageIndex, pageSize);
 				page(pageScale, q);
 				foodCategoryList = pageScale.getRecords();
-				Long count = count();
+				Long count = count(q);
 				be = new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS, foodCategoryList);
 				be.setCount(count);
 			} else {
 				foodCategoryList=list(q);
 				be = new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS, foodCategoryList);
 			}
-
 			return be;
 		} catch (Exception e) {
-			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
+			return new BaseExecution<FoodCategory>("未知错误");
 		}
 
 	}
@@ -107,8 +111,11 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 				throw new BaseExecuteException("更新失败");
 			}
 			return new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS);
-		} catch (Exception e) {
-			return new BaseExecution<FoodCategory>(ExecuteStateEum.INNER_ERROR);
+		}catch (BaseExecuteException e) {
+			return new BaseExecution<FoodCategory>(e.getMessage());
+		} 
+		catch (Exception e) {
+			return new BaseExecution<FoodCategory>("未知错误");
 		}
 	}
 

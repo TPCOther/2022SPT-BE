@@ -7,7 +7,8 @@ import com.easyorder.util.BaseExecuteException;
 
 public interface CustomerService extends IService<Customer>{
 	BaseExecution<Customer> selectCustomerList(Customer selectTable) throws BaseExecuteException;
-    BaseExecution<Customer> insertCustomer(Customer insertCustomer) throws BaseExecuteException;
+    BaseExecution<Customer> insertCustomer(Customer insertCustomer,String code) throws BaseExecuteException;
     BaseExecution<Customer> updateCustomer(Customer updateCustomer) throws BaseExecuteException;
     BaseExecution<Customer> deleteCustomer(Customer deleteCustomer) throws BaseExecuteException;
+    BaseExecution<Customer> login(String code);
 }

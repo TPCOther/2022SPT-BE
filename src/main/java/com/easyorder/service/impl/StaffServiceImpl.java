@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 15:00:54
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-01 10:24:11
+ * @LastEditTime: 2022-07-02 11:54:40
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\StaffServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -11,6 +11,7 @@ package com.easyorder.service.impl;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -21,9 +22,13 @@ import com.easyorder.mapper.RolePermissionMapper;
 import com.easyorder.mapper.StaffMapper;
 import com.easyorder.service.StaffService;
 import com.easyorder.util.BaseExecuteException;
+import com.easyorder.util.HttpServletRequestUtil;
+
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import cn.hutool.crypto.digest.BCrypt;
 @Service
 public class StaffServiceImpl implements StaffService{
 
@@ -83,6 +88,9 @@ public class StaffServiceImpl implements StaffService{
         &&staff.getStaffSalary()!=null&&StringUtils.isNotEmpty(staff.getStaffPosition())&&staff.getStaffPhone()!=null
         &&StringUtils.isNotEmpty(staff.getStaffAccount())&&StringUtils.isNotEmpty(staff.getStaffPassword()))
         {
+            // BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
+            // String encodePassword=bCryptPasswordEncoder.encode(staff.getStaffPassword());
+            // staff.setStaffPassword(encodePassword);
             try {
                 int effctedNum=staffMapper.updateById(staff);
             if(effctedNum<=0)
@@ -114,24 +122,13 @@ public class StaffServiceImpl implements StaffService{
         Long long2=staffMapper.findRoleIdByRoleId(staff.getRoleId());
         if(long1!=null&&long2!=null)
         {
-            // Boolean n=StringUtils.isNotEmpty(staff.getStaffName());
-            // Boolean g=StringUtils.isNotEmpty(staff.getStaffGender());
-            // int s=staff.getStaffSalary();
-            // Boolean p=StringUtils.isNotEmpty(staff.getStaffPosition());
-            // int p1=staff.getStaffPhone();
-            // Boolean a=StringUtils.isNotEmpty(staff.getStaffAccount());
-            // Boolean pas=StringUtils.isNotEmpty(staff.getStaffPassword());
-            // System.out.println(n);
-            // System.out.println(g);
-            // System.out.println(s);
-            // System.out.println(p);
-            // System.out.println(p1);
-            // System.out.println(a);
-            // System.out.println(pas);
             if(StringUtils.isNotEmpty(staff.getStaffName())&&StringUtils.isNotEmpty(staff.getStaffGender())
             &&staff.getStaffSalary()!=null&&StringUtils.isNotEmpty(staff.getStaffPosition())&&staff.getStaffPhone()!=null
             &&StringUtils.isNotEmpty(staff.getStaffAccount())&&StringUtils.isNotEmpty(staff.getStaffPassword()))
             {
+
+                String encodePassword=BCrypt.hashpw(staff.getStaffPassword());
+                staff.setStaffPassword(encodePassword);
                 try {
                     int effctedNum=staffMapper.insert(staff);
                     if(effctedNum<=0)
@@ -151,6 +148,50 @@ public class StaffServiceImpl implements StaffService{
             throw new BaseExecuteException("创建员工(staff)失败:请检查role_id,department_id是否存在");
         }   
         
+    }
+
+    @Override
+    public BaseExecution<Staff> login(HttpServletRequest request) {
+
+        String account=HttpServletRequestUtil.getString(request, "staffAccount");
+        String password=HttpServletRequestUtil.getString(request, "staffPassword");
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        try {
+            String string=staffMapper.findPasswordByAccount(account);
+            
+            if(BCrypt.checkpw(password, string));
+            {
+                baseExecution.setEum(ExecuteStateEum.SUCCESS);
+                return baseExecution;
+            }
+        } catch (Exception e) {
+            throw new BaseExecuteException("登录失败！请检查staff_account、staff_password是否存在");
+        }
+
+        // UserExample userExample = new UserExample();
+        // UserExample.Criteria criteria = userExample.createCriteria();
+        // criteria.andNumberEqualTo(user.getNumber());
+        // List<User> users = userMapper.selectByExample(userExample);
+        // if (CollectionUtils.isEmpty(users)){
+        //     return 0;
+        // }
+        // User user1 = users.get(0);
+        // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        // if (encoder.matches(user.getPassword(), user1.getPassword())){
+        //     return 1;
+        // }
+        // return 0;
+
+        // try {
+        //     List<Staff> staffs=staffMapper.selectList(wrapper);
+        //     baseExecution.setEum(ExecuteStateEum.SUCCESS);
+        //     baseExecution.setTList(staffs);
+        //     baseExecution.setCount(Long.valueOf(staffs.size()));
+        //     return baseExecution;
+
+        // } catch (Exception e) {
+        //     throw new BaseExecuteException("查询员工(staff)失败:"+e.getMessage());
+        // }
     }
 
     // @Override

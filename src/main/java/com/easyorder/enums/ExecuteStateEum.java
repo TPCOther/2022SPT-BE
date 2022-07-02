@@ -1,9 +1,9 @@
 package com.easyorder.enums;
 
 public enum ExecuteStateEum {
-    SUCCESS(1111,"操作成功"),INNER_ERROR(1000,"操作失败,内部错误"),
-    EMPTY(1001,"查询结果为空"),INCOMPLETE(1002,"输入信息不完整"),
-    INPUT_ERROR(1003,"输入数据不合法");
+    SUCCESS(200,"操作成功"),INNER_ERROR(500,"操作失败,内部错误"),
+    EMPTY(500,"查询结果为空"),INCOMPLETE(500,"输入信息不完整"),
+    INPUT_ERROR(500,"输入数据不合法");
 
     
     private int state;

@@ -8,16 +8,19 @@
  */
 package com.easyorder.mapper;
 
+import org.apache.ibatis.annotations.Select;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.easyorder.entity.Permission;
+
+import io.lettuce.core.dynamic.annotation.Param;
 
 
 
 public interface PermissionMapper extends BaseMapper<Permission> {
 
-    // @Select("SELECT permission.permission_id " +
-    //         " FROM permission, role " +
-    //         " WHERE role_id = #{id} " +
-    //         "     AND permission.permission_id = role.role_id")
-    // Long findUserNameByBlogId(@Param("role_id") Long id);
+    @Select("SELECT permission.permission_url " +
+            " FROM permission" +
+            " WHERE permission_id = #{id}")
+    String findPermissionUrl(@Param("id") Long id);
 }

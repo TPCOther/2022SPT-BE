@@ -28,6 +28,7 @@ import com.easyorder.entity.RolePermission;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.mapper.PermissionMapper;
 import com.easyorder.mapper.RolePermissionMapper;
+import com.easyorder.mapper.StaffMapper;
 @Service
 public class PermissionServiceImpl implements PermissionService{
 
@@ -35,6 +36,8 @@ public class PermissionServiceImpl implements PermissionService{
     PermissionMapper permissionMapper;
     @Resource
     RolePermissionMapper rolePermissionMapper;
+    @Resource
+    StaffMapper staffMapper;
     @Override
     public BaseExecution<Permission> selectPermissionList(Permission permission) throws BaseExecuteException{
         
@@ -121,8 +124,10 @@ public class PermissionServiceImpl implements PermissionService{
     public BaseExecution<Permission> deletePermission(Permission permission) throws BaseExecuteException{
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
-            Long l=rolePermissionMapper.findRoleIdByPermissionId(permission.getPermissionId());
+            List<Long> permissions=rolePermissionMapper.findRoleIdListByPermissionId(permission.getPermissionId());
+            
             QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
+
             Long permissionId=permission.getPermissionId();
             Long roleId=l;
             int e=1;
@@ -143,6 +148,21 @@ public class PermissionServiceImpl implements PermissionService{
         } catch (Exception e) {
             throw new BaseExecuteException("删除权限(Permission)失败:"+e.getMessage());
         }
+    }
+
+    @Override
+    public BaseExecution<Permission> getPermissionListById(Long staffId) throws BaseExecuteException {
+        BaseExecution<Permission> baseExecution=new BaseExecution<>();
+
+        Long roleId=staffMapper.findRoleIdByStaffId(staffId);
+        QueryWrapper<Permission> wrapper=new QueryWrapper<>();
+        //TODO注释
+        // wrapper.eq(permissionId!=null,"permission_id",permissionId);
+        List<Permission> permissions=permissionMapper.selectList(wrapper);
+
+        baseExecution.setEum(ExecuteStateEum.SUCCESS);
+        baseExecution.setTList(permissions);
+        return baseExecution;
     }
     
 }

@@ -49,7 +49,7 @@ public class StaffServiceImpl implements StaffService{
         String gender=staff.getStaffName();
         Integer salary=staff.getStaffSalary();
         String position=staff.getStaffPosition();
-        Integer phone=staff.getStaffPhone();
+        Long phone=staff.getStaffPhone();
         String address=staff.getStaffAddress();
         Integer state=staff.getStaffState();
         String account=staff.getStaffAccount();

@@ -25,7 +25,7 @@ public class TokenAspect {
         RBody rbody = (RBody)point.proceed();
         String token = threadLocalToken.getToken();
         if(token!=null){ //若token更新，将token加入返回响应中
-            rbody.put("token",token);
+            rbody.token(token);
             threadLocalToken.clear();
         }
         return rbody;

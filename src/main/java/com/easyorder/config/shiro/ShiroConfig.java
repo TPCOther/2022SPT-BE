@@ -31,7 +31,7 @@ public class ShiroConfig {
         Map<String, Filter> map = new HashMap<>();
         map.put("oauth2",filter);
         shiroFilter.setFilters(map);
-
+        //TODO 设置拦截路由
         Map<String, String> filterMap = new LinkedHashMap<>();  //设置要拦截的路径
         //不被拦截
         // filterMap.put("/webjars/**","anon");

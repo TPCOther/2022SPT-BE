@@ -37,7 +37,7 @@ public class CustomerController {
 	@Resource
 	private RedisTemplate redisTemplate;
 
-	@Value("${emos.jwt.cache-expire}")
+	@Value("${easyorder.jwt.cache-expire}")
 	private int caheExpire;
 
 	private void saveCaheToken(String token, Long customerId) {

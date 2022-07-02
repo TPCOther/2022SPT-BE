@@ -38,7 +38,7 @@ public class OAuth2Realm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection collection) {
         Staff staff = (Staff) collection.getPrimaryPrincipal();  //取出之前令牌中封装的staff
         Long staffId = staff.getStaffId();
-        //TODO 查询权限列表，把权限列表添加到info对象中
+        //TODO 查询权限列表，把权限列表添加到info对象中 id=0 为customer，无权限
 
         // Set<String> permsSet = staffService.searchUserPermissions(staffId);   //获取权限列表
         

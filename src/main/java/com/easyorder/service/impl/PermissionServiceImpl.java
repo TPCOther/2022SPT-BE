@@ -8,6 +8,7 @@
  */
 package com.easyorder.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -172,17 +173,16 @@ public class PermissionServiceImpl implements PermissionService{
     }
 
     @Override
-    public BaseExecution<Permission> getPermissionListById(Long staffId) throws BaseExecuteException {
-        BaseExecution<Permission> baseExecution=new BaseExecution<>();
-
+    public BaseExecution<String> getPermissionListById(Long staffId) throws BaseExecuteException {
+        BaseExecution<String> baseExecution=new BaseExecution<>();
         Long roleId=staffMapper.findRoleIdByStaffId(staffId);
-        QueryWrapper<Permission> wrapper=new QueryWrapper<>();
-        //TODO注释
-        // wrapper.eq(permissionId!=null,"permission_id",permissionId);
-        List<Permission> permissions=permissionMapper.selectList(wrapper);
-
+        List<Long> permissions=rolePermissionMapper.findPermissionIdListByRoleId(roleId);
+        List<String> urls=new ArrayList<String>();
+        for(Long permissionId:permissions){
+            urls.add(permissionMapper.findPermissionUrl(permissionId));
+        }
         baseExecution.setEum(ExecuteStateEum.SUCCESS);
-        baseExecution.setTList(permissions);
+        baseExecution.setTList(urls);
         return baseExecution;
     }
     

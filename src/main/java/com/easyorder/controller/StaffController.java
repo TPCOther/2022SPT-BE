@@ -99,13 +99,11 @@ public class StaffController {
             //创建jwt
             Long staffId = baseExecution.getTemp().getStaffId();
             String token = jwtUtil.createToken(staffId);
-            // TODO 获取权限列表 注释
-            // redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
-            // List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
-            // Set<String> permsSet = userService.searchUserPermissions(id);
-            // Set<String> permsSet = new HashSet<>(permissionList);
-            // rBody=RBody.ok("注册成功").data((baseExecution.getTemp().getStaffId())).token(token).put("permission",permsSet);
-            rBody=RBody.ok();
+            redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
+            // TODO 获取权限列表
+            List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
+            Set<String> permsSet = new HashSet<>(permissionList);
+            rBody=RBody.ok("注册成功").data((baseExecution.getTemp().getStaffId())).token(token).put("permission",permsSet);
         } catch (Exception e) {
             rBody=RBody.error(e.getMessage());
         }
@@ -116,9 +114,17 @@ public class StaffController {
     public RBody loginStaff(HttpServletRequest request)
     {
         RBody rBody=new RBody();
+        BaseExecution<Long> baseExecution=new BaseExecution<>();
         try {
-            this.staffService.login(request);
-            rBody=RBody.ok("登陆成功");
+            baseExecution=this.staffService.login(request);
+            //创建jwt
+            Long staffId = baseExecution.getTemp();
+            String token = jwtUtil.createToken(staffId);
+            redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
+            // TODO 获取权限列表
+            List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
+            Set<String> permsSet = new HashSet<>(permissionList);
+            rBody=RBody.ok("登陆成功").data((baseExecution.getTemp())).token(token).put("permission",permsSet);
         } catch (Exception e) {
             rBody=RBody.error(e.getMessage());
         }

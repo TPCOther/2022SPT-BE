@@ -160,17 +160,19 @@ public class StaffServiceImpl implements StaffService{
     }
 
     @Override
-    public BaseExecution<Staff> login(HttpServletRequest request) {
+    public BaseExecution<Long> login(HttpServletRequest request) {
 
         String account=HttpServletRequestUtil.getString(request, "staffAccount");
         String password=HttpServletRequestUtil.getString(request, "staffPassword");
-        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        BaseExecution<Long> baseExecution=new BaseExecution<>();
         try {
             String string=staffMapper.findPasswordByAccount(account);
+            Long staffId=staffMapper.findStaffIdByAccount(account);
             
             if(BCrypt.checkpw(password, string));
             {
                 baseExecution.setEum(ExecuteStateEum.SUCCESS);
+                baseExecution.setTemp(staffId);
                 return baseExecution;
             }
         } catch (Exception e) {

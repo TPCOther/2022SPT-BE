@@ -23,7 +23,7 @@ public interface StaffService {
     BaseExecution<Staff> updateStaff(Staff staff) throws BaseExecuteException;
     BaseExecution<Staff> insertStaff(Staff staff) throws BaseExecuteException;
     // BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException;
-    BaseExecution<Staff> login(HttpServletRequest request);
+    BaseExecution<Long> login(HttpServletRequest request);
 
     // BaseExecution<Role> test(Long id);
 

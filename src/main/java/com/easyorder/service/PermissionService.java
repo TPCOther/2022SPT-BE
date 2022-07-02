@@ -20,5 +20,5 @@ public interface PermissionService {
     BaseExecution<Permission> insertPermission(Permission permission) throws BaseExecuteException;
     BaseExecution<Permission> deletePermission(Permission permission) throws BaseExecuteException;
 
-    BaseExecution<Permission> getPermissionListById(Long staffId) throws BaseExecuteException;
+    BaseExecution<String> getPermissionListById(Long staffId) throws BaseExecuteException;
 }

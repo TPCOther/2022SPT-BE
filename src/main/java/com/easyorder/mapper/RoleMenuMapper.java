@@ -2,11 +2,13 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-07-01 11:37:54
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-01 17:17:11
+ * @LastEditTime: 2022-07-02 17:06:11
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\mapper\RoleMenuMapper.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 package com.easyorder.mapper;
+import java.util.List;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.easyorder.entity.RoleMenu;
 
@@ -23,8 +25,8 @@ public interface RoleMenuMapper extends BaseMapper<RoleMenu>{
 
 
     @Select("SELECT role_menu.role_id "+"FROM role_menu,controller_menu "+" WHERE controller_menu.controller_menu_id=#{id} "+"AND role_menu.controller_menu_id=controller_menu.controller_menu_id")
-    Long findRoleIdByControllerMenuId(@Param("id")Long id);
+    List<Long> findRoleIdListByControllerMenuId(@Param("id")Long id);
 
     @Select("SELECT role_menu.controller_menu_id "+"FROM role_menu,role "+" WHERE role.role_id=#{id} "+"AND role_menu.role_id=role.role_id")
-    Long findControllerMenuIdByRoleId(@Param("id")Long id);
+    List<Long> findControllerMenuIdListByRoleId(@Param("id")Long id);
 }

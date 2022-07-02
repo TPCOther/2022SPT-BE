@@ -2,12 +2,13 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 16:30:30
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-01 17:30:35
+ * @LastEditTime: 2022-07-02 17:04:49
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\PermissionServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 package com.easyorder.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -124,21 +125,18 @@ public class PermissionServiceImpl implements PermissionService{
     public BaseExecution<Permission> deletePermission(Permission permission) throws BaseExecuteException{
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
-            List<Long> permissions=rolePermissionMapper.findRoleIdListByPermissionId(permission.getPermissionId());
-            
-            QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
+
+            List<Long> longs=rolePermissionMapper.findRoleIdListByPermissionId(permission.getPermissionId());
 
             Long permissionId=permission.getPermissionId();
-            Long roleId=l;
-            int e=1;
-            wrapper.eq(permissionId!=null, "permission_id",permissionId);
-            wrapper.eq(roleId!=null, "role_id",roleId);
-            if(roleId!=null)
-            {
-                e=rolePermissionMapper.delete(wrapper);
+            for(Long roleId:longs){
+                QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
+                wrapper.eq(permissionId!=null, "permission_id",permissionId);
+                wrapper.eq(roleId!=null, "role_id",roleId);
+                rolePermissionMapper.delete(wrapper);
             }
             int effctedNum=permissionMapper.deleteById(permission);
-            if(effctedNum<=0||e<=0)
+            if(effctedNum<=0)
             {
                 throw new BaseExecuteException("删除0条信息");
             }
@@ -148,20 +146,43 @@ public class PermissionServiceImpl implements PermissionService{
         } catch (Exception e) {
             throw new BaseExecuteException("删除权限(Permission)失败:"+e.getMessage());
         }
+
+        // try {
+        //     Long l=rolePermissionMapper.findRoleIdByPermissionId(permission.getPermissionId());
+        //     QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
+        //     Long permissionId=permission.getPermissionId();
+        //     Long roleId=l;
+        //     int e=1;
+        //     wrapper.eq(permissionId!=null, "permission_id",permissionId);
+        //     wrapper.eq(roleId!=null, "role_id",roleId);
+        //     if(roleId!=null)
+        //     {
+        //         e=rolePermissionMapper.delete(wrapper);
+        //     }
+        //     int effctedNum=permissionMapper.deleteById(permission);
+        //     if(effctedNum<=0||e<=0)
+        //     {
+        //         throw new BaseExecuteException("删除0条信息");
+        //     }
+        //     baseExecution.setEum(ExecuteStateEum.SUCCESS);
+        //     baseExecution.setTemp(permission);
+        //     return baseExecution;
+        // } catch (Exception e) {
+        //     throw new BaseExecuteException("删除权限(Permission)失败:"+e.getMessage());
+        // }
     }
 
     @Override
-    public BaseExecution<Permission> getPermissionListById(Long staffId) throws BaseExecuteException {
-        BaseExecution<Permission> baseExecution=new BaseExecution<>();
-
+    public BaseExecution<String> getPermissionListById(Long staffId) throws BaseExecuteException {
+        BaseExecution<String> baseExecution=new BaseExecution<>();
         Long roleId=staffMapper.findRoleIdByStaffId(staffId);
-        QueryWrapper<Permission> wrapper=new QueryWrapper<>();
-        //TODO注释
-        // wrapper.eq(permissionId!=null,"permission_id",permissionId);
-        List<Permission> permissions=permissionMapper.selectList(wrapper);
-
+        List<Long> permissions=rolePermissionMapper.findPermissionIdListByRoleId(roleId);
+        List<String> urls=new ArrayList<String>();
+        for(Long permissionId:permissions){
+            urls.add(permissionMapper.findPermissionUrl(permissionId));
+        }
         baseExecution.setEum(ExecuteStateEum.SUCCESS);
-        baseExecution.setTList(permissions);
+        baseExecution.setTList(urls);
         return baseExecution;
     }
     

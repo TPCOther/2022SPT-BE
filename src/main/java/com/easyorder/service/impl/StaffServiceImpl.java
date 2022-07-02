@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 15:00:54
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-02 11:54:40
+ * @LastEditTime: 2022-07-02 16:04:27
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\StaffServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -16,8 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Permission;
+import com.easyorder.entity.Role;
 import com.easyorder.entity.Staff;
 import com.easyorder.enums.ExecuteStateEum;
+import com.easyorder.mapper.PermissionMapper;
+import com.easyorder.mapper.RoleMapper;
 import com.easyorder.mapper.RolePermissionMapper;
 import com.easyorder.mapper.StaffMapper;
 import com.easyorder.service.StaffService;
@@ -37,7 +41,12 @@ public class StaffServiceImpl implements StaffService{
 
     @Resource
     RolePermissionMapper rolePermissionMapper;
+
+    @Resource
+    PermissionMapper permissionMapper;
     
+    @Resource
+    RoleMapper roleMapper;
     @Override
     public BaseExecution<Staff> selectStaffList(Staff staff) throws BaseExecuteException{
         QueryWrapper<Staff> wrapper=new QueryWrapper<>();
@@ -151,17 +160,19 @@ public class StaffServiceImpl implements StaffService{
     }
 
     @Override
-    public BaseExecution<Staff> login(HttpServletRequest request) {
+    public BaseExecution<Long> login(HttpServletRequest request) {
 
         String account=HttpServletRequestUtil.getString(request, "staffAccount");
         String password=HttpServletRequestUtil.getString(request, "staffPassword");
-        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        BaseExecution<Long> baseExecution=new BaseExecution<>();
         try {
             String string=staffMapper.findPasswordByAccount(account);
+            Long staffId=staffMapper.findStaffIdByAccount(account);
             
             if(BCrypt.checkpw(password, string));
             {
                 baseExecution.setEum(ExecuteStateEum.SUCCESS);
+                baseExecution.setTemp(staffId);
                 return baseExecution;
             }
         } catch (Exception e) {
@@ -193,6 +204,26 @@ public class StaffServiceImpl implements StaffService{
         //     throw new BaseExecuteException("查询员工(staff)失败:"+e.getMessage());
         // }
     }
+
+    // @Override
+    // public BaseExecution<Role> test(Long id) {
+    //     BaseExecution<Role> baseExecution=new BaseExecution<>();
+    //     Long roleId=staffMapper.findRoleIdByStaffId(id);
+    //     Long permissionId=rolePermissionMapper.findPermissionIdByRoleId(roleId);
+    //     QueryWrapper<Permission> wrapper=new QueryWrapper<>();
+    //     wrapper.eq(permissionId!=null,"permission_id",permissionId);
+    //     List<Permission> permissions=permissionMapper.selectList(wrapper);
+
+    //     String roleName=roleMapper.findRoleName(roleId);
+    //     // QueryWrapper<Role> wrapper2=new QueryWrapper<>();
+    //     // wrapper2.eq(StringUtils.isNotEmpty(roleName),"role_name",roleName);
+    //     // List<Role> roles=roleMapper.selectList(wrapper2);
+        
+    //     baseExecution.setEum(ExecuteStateEum.SUCCESS);
+    //     baseExecution.setTemp(roleName);
+    //     baseExecution.setCount(Long.valueOf(permissions.size()));
+    //     return baseExecution;
+    // }
 
     // @Override
     // public BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException{

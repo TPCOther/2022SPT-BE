@@ -1,8 +1,10 @@
 package com.easyorder.config.shiro;
 
 import com.easyorder.entity.Staff;
+import com.easyorder.enums.StaffStateEum;
 import com.easyorder.mapper.StaffMapper;
-import com.easyorder.service.StaffService;
+import com.easyorder.service.PermissionService;
+import com.easyorder.service.RoleService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +25,10 @@ public class OAuth2Realm extends AuthorizingRealm {
     private JwtUtil jwtUtil;
 
     @Autowired
+    private PermissionService permissionService;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
     private StaffMapper staffMapper;
 
     //判断封装令牌对象正确性
@@ -39,16 +45,17 @@ public class OAuth2Realm extends AuthorizingRealm {
         Staff staff = (Staff) collection.getPrimaryPrincipal();  //取出之前令牌中封装的staff
         Long staffId = staff.getStaffId();
         //TODO 查询权限列表，把权限列表添加到info对象中 id=0 为customer，无权限
-
-        // Set<String> permsSet = staffService.searchUserPermissions(staffId);   //获取权限列表
+        List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
+        Set<String> permsSet = new HashSet<String>(permissionList);  //获取权限列表
         
-        List<String> permissionList = new ArrayList<>();
-        permissionList.add("dinTable:view");
-        Set<String> permsSet = new HashSet<>(permissionList);
+        // List<String> permissionList = new ArrayList<>();
+        // permissionList.add("dinTable:view");
+        // Set<String> permsSet = new HashSet<String>(permissionList);
 
+        // 查询角色列表
         List<String> roleList = new ArrayList<>();
-        roleList.add("customer");
-        Set<String> roleSet = new HashSet<>(roleList);
+        roleList.add(roleService.getRoleNameByStaffId(staffId).getTemp());
+        Set<String> roleSet = new HashSet<String>(roleList);
 
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         info.setStringPermissions(permsSet);    //设置令牌权限
@@ -65,7 +72,7 @@ public class OAuth2Realm extends AuthorizingRealm {
         Long staffId = jwtUtil.getStaffId(accessToken);
         //TODO 判断staff是否可用
         Staff staff = staffMapper.selectById(staffId);   //取得用户信息,检查账户是否可用
-        if(staff == null){ throw new LockedAccountException("账号不可用，请联系管理员"); }  //账户异常
+        if(staff == null || staff.getStaffState()!=StaffStateEum.WROKING.getState()){ throw new LockedAccountException("账号不可用，请联系管理员"); }  //账户异常
         //TODO 往info对象中添加用户信息，Token字符串
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(staff, accessToken, getName()); //封装为令牌对象
         return info;

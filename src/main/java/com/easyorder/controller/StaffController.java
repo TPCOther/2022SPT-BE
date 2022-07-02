@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 15:27:57
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-02 09:35:08
+ * @LastEditTime: 2022-07-02 16:13:24
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\StaffController.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.easyorder.config.shiro.JwtUtil;
 import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Permission;
+import com.easyorder.entity.Role;
 import com.easyorder.entity.Staff;
 import com.easyorder.service.PermissionService;
 import com.easyorder.service.StaffService;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,13 +99,11 @@ public class StaffController {
             //创建jwt
             Long staffId = baseExecution.getTemp().getStaffId();
             String token = jwtUtil.createToken(staffId);
-            // TODO 获取权限列表 注释
-            // redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
-            // List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
-            // Set<String> permsSet = userService.searchUserPermissions(id);
-            // Set<String> permsSet = new HashSet<>(permissionList);
-            // rBody=RBody.ok("注册成功").data((baseExecution.getTemp().getStaffId())).token(token).put("permission",permsSet);
-            rBody=RBody.ok();
+            redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
+            // TODO 获取权限列表
+            List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
+            Set<String> permsSet = new HashSet<>(permissionList);
+            rBody=RBody.ok("注册成功").data((baseExecution.getTemp().getStaffId())).token(token).put("permission",permsSet);
         } catch (Exception e) {
             rBody=RBody.error(e.getMessage());
         }
@@ -113,9 +114,17 @@ public class StaffController {
     public RBody loginStaff(HttpServletRequest request)
     {
         RBody rBody=new RBody();
+        BaseExecution<Long> baseExecution=new BaseExecution<>();
         try {
-            this.staffService.login(request);
-            rBody=RBody.ok("登陆成功");
+            baseExecution=this.staffService.login(request);
+            //创建jwt
+            Long staffId = baseExecution.getTemp();
+            String token = jwtUtil.createToken(staffId);
+            redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
+            // TODO 获取权限列表
+            List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
+            Set<String> permsSet = new HashSet<>(permissionList);
+            rBody=RBody.ok("登陆成功").data((baseExecution.getTemp())).token(token).put("permission",permsSet);
         } catch (Exception e) {
             rBody=RBody.error(e.getMessage());
         }
@@ -123,6 +132,19 @@ public class StaffController {
     }
 
 
+    // @GetMapping("/test")
+    // public RBody test(Long id)
+    // {
+    //     BaseExecution<Role> baseExecution=new BaseExecution<>();
+    //     RBody rBody=new RBody();
+    //     try {
+    //         baseExecution=this.staffService.test(1l);
+    //         rBody=RBody.ok().data((baseExecution.getTList()));
+    //     } catch (Exception e) {
+    //         rBody=RBody.error(e.getMessage());
+    //     }
+    //     return rBody;
+    // }
 
     // @PostMapping("/delete")
     // public RBody deleteStaff(@RequestBody Staff staff)

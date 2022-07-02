@@ -17,4 +17,6 @@ public interface RoleService {
     BaseExecution<Role> updateRole(Role role) throws BaseExecuteException;
     BaseExecution<Role> insertRole(Role role) throws BaseExecuteException;
     BaseExecution<Role> deleteRole(Role role) throws BaseExecuteException;
+
+    BaseExecution<String> getRoleNameByStaffId(Long staffId) throws BaseExecuteException;
 }

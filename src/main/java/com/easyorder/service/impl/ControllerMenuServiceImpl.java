@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-07-01 15:18:54
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-01 17:18:28
+ * @LastEditTime: 2022-07-02 17:15:27
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\ControllerMenuServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -102,21 +102,32 @@ public class ControllerMenuServiceImpl implements ControllerMenuService{
     @Override
     public BaseExecution<ControllerMenu> deleteControllerMenu(ControllerMenu controllerMenu) throws BaseExecuteException {
         
+        // List<Long> longs=rolePermissionMapper.findRoleIdListByPermissionId(permission.getPermissionId());
+            
+        // Long permissionId=permission.getPermissionId();
+        // for(Long roleId:longs){
+        //     QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
+        //     wrapper.eq(permissionId!=null, "permission_id",permissionId);
+        //     wrapper.eq(roleId!=null, "role_id",roleId);
+        //     rolePermissionMapper.delete(wrapper);
+        // }
+
+
         BaseExecution<ControllerMenu> baseExecution=new BaseExecution<>();
         try {
-            Long long1=roleMenuMapper.findRoleIdByControllerMenuId(controllerMenu.getControllerMenuId());
-            QueryWrapper<RoleMenu> wrapper=new QueryWrapper<>();
-            Long roleId=long1;
+
+
             Long controllerMenuId=controllerMenu.getControllerMenuId();
-            int e=1;
-            wrapper.eq(roleId!=null, "role_id",roleId);
-            wrapper.eq(controllerMenuId!=null, "controller_menu_id",controllerMenu);
-            if(roleId!=null)
+            List<Long> longs=roleMenuMapper.findRoleIdListByControllerMenuId(controllerMenu.getControllerMenuId());
+            for(Long roleId:longs)
             {
-                e=roleMenuMapper.delete(wrapper);
+                QueryWrapper<RoleMenu> wrapper=new QueryWrapper<>();
+                wrapper.eq(roleId!=null, "role_id",roleId);
+                wrapper.eq(controllerMenuId!=null, "controller_menu_id",controllerMenuId);
+                roleMenuMapper.delete(wrapper);
             }
             int effctedNum=controllerMenuMapper.deleteById(controllerMenuId);
-            if(e<=0||effctedNum<=0)
+            if(effctedNum<=0)
             {
                 throw new BaseExecuteException("删除0条信息");
             }

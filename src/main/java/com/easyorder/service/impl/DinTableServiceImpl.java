@@ -49,7 +49,7 @@ public class DinTableServiceImpl implements DinTableService {
         wapper.eq(dinTableCapacity!=null,"din_table_capacity",dinTableCapacity);
         
         try{
-            // TODO 检查预定桌台预定是否过期
+            // 检查预定桌台预定是否过期
             bookingService.checkBooking();
             
             List<DinTable> dinTableList = dinTableMapper.getDinTableArea(wapper);
@@ -125,7 +125,7 @@ public class DinTableServiceImpl implements DinTableService {
     
     @Override
     public BaseExecution<DinTable> selectDinTableById(Long selectId)throws BaseExecuteException {
-        // TODO 检查预定桌台是否过期
+        // 检查预定桌台是否过期
         bookingService.checkBooking();
 
         BaseExecution<DinTable> baseExecution = new BaseExecution<DinTable>();

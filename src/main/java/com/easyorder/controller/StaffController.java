@@ -1,61 +1,107 @@
-// /*
-//  * @Author: 123456 2373464672@qq.com
-//  * @Date: 2022-06-28 15:27:57
-//  * @LastEditors: 123456 2373464672@qq.com
-//  * @LastEditTime: 2022-06-28 15:36:17
-//  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\StaffController.java
-//  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
-//  */
-// package com.easyorder.controller;
+/*
+ * @Author: 123456 2373464672@qq.com
+ * @Date: 2022-06-28 15:27:57
+ * @LastEditors: 123456 2373464672@qq.com
+ * @LastEditTime: 2022-07-02 09:35:08
+ * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\StaffController.java
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+package com.easyorder.controller;
 
-// import javax.annotation.Resource;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
-// import com.easyorder.entity.Staff;
-// import com.easyorder.service.StaffService;
-// import com.google.gson.Gson;
+import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Staff;
+import com.easyorder.service.StaffService;
+import com.easyorder.util.RBody;
+import com.google.gson.Gson;
 
-// import org.springframework.web.bind.annotation.CrossOrigin;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-// @CrossOrigin(origins = {"*","null"}) //用于跨域请求，*代表允许响应所有的跨域请求
-// // @SuppressWarnings("all") 用于忽略报错
-// @RestController
-// public class StaffController {
-//     @Resource
-//     StaffService staffService;
-//     Gson gson=new Gson();
+@CrossOrigin(origins = {"*","null"}) //用于跨域请求，*代表允许响应所有的跨域请求
+// @SuppressWarnings("all") 用于忽略报错
+@RestController
+@RequestMapping("/staff")
+public class StaffController {
+    @Resource
+    StaffService staffService;
+    Gson gson=new Gson();
     
-//     @PostMapping("/selectStaff")
-//     public String selectStaff(@RequestBody Staff staff)
-//     {
-//         return gson.toJson(staffService.getStaffList(staff));
-//     }
+    @PostMapping("/select")
+    public RBody selectStaff(@RequestBody Staff staff)
+    {
+        RBody rBody=new RBody();
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        try {
+            baseExecution=this.staffService.selectStaffList(staff);
+            rBody=RBody.ok().data(baseExecution.getTList());
+        } catch (Exception e) {
+            rBody=RBody.error(e.toString());
+        }
+        return rBody;
+    }
 
-//     @PostMapping("/updateHeadline")
-//     public String updateHeadline(@RequestBody Staff staff)
-//     {
+    @PostMapping("/update")
+    public RBody updateStaff(@RequestBody Staff staff)
+    {
+        RBody rBody=new RBody();
+        //BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        try {
+            //baseExecution=
+            this.staffService.updateStaff(staff);
+            rBody=RBody.ok();
+        } catch (Exception e) {
+            rBody=RBody.error(e.toString());
+        }
+        return rBody;
+    }
+
+    @PostMapping("/insert")
+    public RBody insertStaff(@RequestBody Staff staff)
+    {
         
-//         staffService.updateStaff(staff);
-//         Staff staff2=new Staff();
-//         return gson.toJson(staffService.getStaffList(staff2));
-//     }
+        RBody rBody=new RBody();
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        try {
+            baseExecution=this.staffService.insertStaff(staff);
+            rBody=RBody.ok().data((baseExecution.getTemp().getStaffId()));
+        } catch (Exception e) {
+            rBody=RBody.error(e.getMessage());
+        }
+        return rBody;
+    }
 
-//     @PostMapping("/insertHeadline")
-//     public String insertHeadline(@RequestBody Staff staff)
-//     {
-        
-//         staffService.insertStaff(staff);
-//         Staff staff2=new Staff();
-//         return gson.toJson(staffService.getStaffList(staff2));
-//     }
+    @PostMapping("/login")
+    public RBody loginStaff(HttpServletRequest request)
+    {
+        RBody rBody=new RBody();
+        try {
+            this.staffService.login(request);
+            rBody=RBody.ok();
+        } catch (Exception e) {
+            rBody=RBody.error(e.getMessage());
+        }
+        return rBody;
+    }
 
-//     @PostMapping("/deleteDepartment")
-//     public String deleteDepartment(@RequestBody Staff staff)
-//     {
-//         staffService.deleteStaff(staff);
-//         Staff staff2=new Staff();
-//         return gson.toJson(staffService.getStaffList(staff2));
-//     }
-// }
+
+
+    // @PostMapping("/delete")
+    // public RBody deleteStaff(@RequestBody Staff staff)
+    // {
+    //     RBody rBody=new RBody();
+    //     BaseExecution<Staff> baseExecution=new BaseExecution<>();
+    //     try {
+    //         baseExecution=this.staffService.deleteStaff(staff);
+    //         rBody=RBody.ok();
+    //     } catch (Exception e) {
+    //         rBody=RBody.error(e.toString());
+    //     }
+    //     return rBody;
+    // }
+}

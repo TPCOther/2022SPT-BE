@@ -1,9 +1,9 @@
 /*
  * @Author: 123456 2373464672@qq.com
- * @Date: 2022-06-28 15:54:14
+ * @Date: 2022-07-01 15:48:00
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-01 08:56:49
- * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\RoleController.java
+ * @LastEditTime: 2022-07-01 15:52:16
+ * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\ControllerMenuController.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 package com.easyorder.controller;
@@ -11,10 +11,9 @@ package com.easyorder.controller;
 import javax.annotation.Resource;
 
 import com.easyorder.dto.BaseExecution;
-import com.easyorder.entity.Role;
-import com.easyorder.service.RoleService;
+import com.easyorder.entity.ControllerMenu;
+import com.easyorder.service.ControllerMenuService;
 import com.easyorder.util.RBody;
-import com.google.gson.Gson;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,20 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = {"*","null"}) //用于跨域请求，*代表允许响应所有的跨域请求
 // @SuppressWarnings("all") 用于忽略报错
 @RestController
-@RequestMapping("/role")
-public class RoleController {
-
+@RequestMapping("/controllerMenu")
+public class ControllerMenuController {
     @Resource
-    RoleService roleService;
-    Gson gson=new Gson();
-    
+    ControllerMenuService controllerMenuService;
+
     @PostMapping("/select")
-    public RBody selectRole(@RequestBody Role role)
+    public RBody selectControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();
-        BaseExecution<Role> baseExecution=new BaseExecution<>();
+        BaseExecution<ControllerMenu> baseExecution=new BaseExecution<>();
         try {
-            baseExecution=this.roleService.selectRoleList(role);
+            baseExecution=this.controllerMenuService.selectControllerMenuList(controllerMenu);
             rBody=RBody.ok().data(baseExecution.getTList());
         } catch (Exception e) {
             rBody=RBody.error(e.toString());
@@ -46,14 +43,16 @@ public class RoleController {
         return rBody;
     }
 
+
+
     @PostMapping("/update")
-    public RBody updateRole(@RequestBody Role role)
+    public RBody updateControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();
-        //BaseExecution<Role> baseExecution=new BaseExecution<>();
+        //BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
             //baseExecution=
-            this.roleService.updateRole(role);
+            this.controllerMenuService.updateControllerMenu(controllerMenu);
             rBody=RBody.ok();
         } catch (Exception e) {
             rBody=RBody.error(e.toString());
@@ -62,27 +61,27 @@ public class RoleController {
     }
 
     @PostMapping("/insert")
-    public RBody insertRole(@RequestBody Role role)
+    public RBody insertControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();
-        BaseExecution<Role> baseExecution=new BaseExecution<>();
+        BaseExecution<ControllerMenu> baseExecution=new BaseExecution<>();
         try {
-            baseExecution=this.roleService.insertRole(role);
-            rBody=RBody.ok().data((baseExecution.getTemp().getRoleId()));
+            baseExecution=this.controllerMenuService.insertControllerMenu(controllerMenu);
+            rBody=RBody.ok().data(baseExecution.getTemp().getControllerMenuId());;
         } catch (Exception e) {
-            rBody=RBody.error(e.getMessage());
+            rBody=RBody.error(e.toString());
         }
         return rBody;
     }
 
     @PostMapping("/delete")
-    public RBody deleteRole(@RequestBody Role role)
+    public RBody deleteControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();
-        //BaseExecution<Role> baseExecution=new BaseExecution<>();
+        //BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
             //baseExecution=
-            this.roleService.deleteRole(role);
+            this.controllerMenuService.deleteControllerMenu(controllerMenu);
             rBody=RBody.ok();
         } catch (Exception e) {
             rBody=RBody.error(e.toString());

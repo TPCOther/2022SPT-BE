@@ -2,10 +2,15 @@ package com.easyorder.service.impl;
 
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.sound.midi.SysexMessage;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +23,24 @@ import com.easyorder.mapper.CustomerMapper;
 import com.easyorder.service.CustomerService;
 import com.easyorder.util.BaseExecuteException;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+
 @Service
+@Scope("prototype")
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
 	@Resource
 	public CustomerMapper customerMapper;
-    /*
+    
+	@Value("${wx.app-id}")
+	private String appId;
+	
+	@Value("${wx.app-secret}")
+	private String appSecret;
+	
+	
+	/*
      * 会员查询
      */
 	@Override
@@ -45,16 +63,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 throw new BaseExecuteException("查询顾客(Customer)失败: "+e.getMessage());
 			}
 	}
-
+	
 	@Override
 	@Transactional
-	public BaseExecution<Customer> insertCustomer(Customer insertCustomer) throws BaseExecuteException {
+	public BaseExecution<Customer> insertCustomer(Customer insertCustomer,String code) throws BaseExecuteException {
         Date now = new Date();
         insertCustomer.setCreateTime(now);
         insertCustomer.setLastEditTime(now);
 		BaseExecution<Customer> baseExecution = new BaseExecution<Customer>();
         try{
-            // TODO 登陆
+            // TODO 注册
+        	String openId=getOpenId(code);
+        	insertCustomer.setOpenId(openId);
             int effctedNum = customerMapper.insert(insertCustomer);
             if(effctedNum <= 0){
                 throw new BaseExecuteException("插入0条数据");
@@ -106,5 +126,48 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 	}
 	
+	
+	//访问微信平台获取openId
+	private String getOpenId(String code) {
+		String url="https://api.weixin.qq.com/sns/jscode2session";
+//				+ "?appId=wxa585593d5c61fa03&secret=b1e5906082004a292b17c93523608c4f&js_code="+code+"&grant_type=authorization_code";
+		System.out.println(appId+"\n"+appSecret);
+		Map<String,Object> map=new HashMap<>();
+		map.put("appid",appId);
+		map.put("secret", appSecret);
+		map.put("js_code",code);
+		map.put("grant_type","authorization_code");
+		String response=HttpUtil.get(url,map);
+		JSONObject json=JSONUtil.parseObj(response);
+		String openId=json.getStr("openid");
+		System.out.println(response);
+		if(openId==null||openId.length()==0) {
+			throw new BaseExecuteException("获取授权失败");
+		}
+		return openId;
+	}
+
+	@Override
+	public BaseExecution<Customer> login(String code) {
+		try {
+			String openId =getOpenId(code);
+			QueryWrapper<Customer> q=new QueryWrapper<Customer>();
+			q.eq("open_id",openId);
+			q.last("limit 1");
+			Customer customer=getOne(q);
+			if(customer==null) {
+				throw new BaseExecuteException("账户不存在");
+			}
+			BaseExecution<Customer> be=new BaseExecution<Customer>();
+			be.setTemp(customer);
+			be.setEum(ExecuteStateEum.SUCCESS);
+			return be;
+		} catch (BaseExecuteException e) {
+			return new BaseExecution<Customer>(e.getMessage());
+		}catch (Exception e) {
+			return new BaseExecution<Customer>("未知错误");
+		}
+		
+	}
 	
 }

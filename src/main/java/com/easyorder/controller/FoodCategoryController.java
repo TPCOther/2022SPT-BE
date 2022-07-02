@@ -56,7 +56,7 @@ public class FoodCategoryController {
 				rBody.put("count", be.getCount());
 			return rBody;
 		} else {
-			return RBody.error(be.getEum().getStateInfo());
+			return RBody.error(be.getStateInfo());
 		}
 	}
 
@@ -77,7 +77,7 @@ public class FoodCategoryController {
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				return RBody.ok(be.getEum().getStateInfo());
 			} else {
-				return RBody.error(be.getEum().getStateInfo());
+				return RBody.error(be.getStateInfo());
 			}
 		} else {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
@@ -97,12 +97,17 @@ public class FoodCategoryController {
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				return RBody.ok(be.getEum().getStateInfo());
 			} else {
-				return RBody.error(be.getEum().getStateInfo());
+				return RBody.error(be.getStateInfo());
 			}
 		} else {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 		}
 	}
+	/**
+	 * 修改
+	 * @param foodCategory
+	 * @return
+	 */
 	@PostMapping("/updatefoodcategory")
 	@ResponseBody
 	public RBody updateFoodCategory(@RequestBody FoodCategory foodCategory) {
@@ -111,7 +116,7 @@ public class FoodCategoryController {
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				return RBody.ok(be.getEum().getStateInfo());
 			} else {
-				return RBody.error(be.getEum().getStateInfo());
+				return RBody.error(be.getStateInfo());
 			}
 		}else {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());

@@ -55,6 +55,11 @@
 		     <artifactId>mybatisplus-plus</artifactId>
 		     <version>1.5.1-RELEASE</version>
 		</dependency>
+		<dependency>
+		     <groupId>com.baomidou</groupId>
+		     <artifactId>mybatis-plus-generator</artifactId>
+		     <version>3.5.1</version>
+		 </dependency>
 		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -133,18 +138,37 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-		<!-- hutool 工具-->
-		<dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.4.0</version>
-        </dependency>
 		<!--redis-->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
-
+		<!-- http相关 -->
+		<!-- hutool 工具-->
+		<!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+		<dependency>
+		    <groupId>cn.hutool</groupId>
+		    <artifactId>hutool-all</artifactId>
+		    <version>5.7.22</version>
+		</dependency>
+		<!-- 参数判断 -->
+		<dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <scope>provided</scope>
+            <version>2.0.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <scope>provided</scope>
+            <version>6.0.16.Final</version>
+        </dependency>
+		   <!-- Spring Security的maven依赖   
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency> -->
 	</dependencies>
 
 	<build>

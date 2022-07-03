@@ -47,11 +47,15 @@ public class CustomerController {
 	@PostMapping("/login")
 	public RBody login(HttpServletRequest request) {
 		String code = HttpServletRequestUtil.getString(request, "code");
+		Long tableId=HttpServletRequestUtil.getLong(request,"tableId");
 		BaseExecution<Customer> be = customerService.login(code);
 		Long id = be.getTemp().getCustomerId();
-		String token = jwtUtil.createToken(id);
+		if(id==null)
+			return RBody.error("没有该用户");
+		String token = jwtUtil.createToken(-1l);
 		saveCaheToken(token, id);
 		request.getSession().setAttribute("customer_id", id);
+		request.getSession().setAttribute("dinTableId", tableId);
 		if (be.getEum() == ExecuteStateEum.SUCCESS) {
 			return RBody.ok(be.getEum().getStateInfo()).put("token", token);
 		} else {
@@ -91,7 +95,7 @@ public class CustomerController {
 		try {
 			be = this.customerService.insertCustomer(insertTable, code);
 			Long id = be.getTemp().getCustomerId();
-			String token = jwtUtil.createToken(id);
+			String token = jwtUtil.createToken(-1l);
 			saveCaheToken(token, id);
 			rbody = RBody.ok().data(be.getTemp().getCustomerId()).put("token", token);
 		} catch (Exception e) {

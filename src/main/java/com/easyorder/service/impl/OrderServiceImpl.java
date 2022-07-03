@@ -1,5 +1,7 @@
 package com.easyorder.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,12 +20,15 @@ import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
 import com.easyorder.enums.CustomerVipEum;
 import com.easyorder.enums.ExecuteStateEum;
+import com.easyorder.enums.OrderStateEum;
 import com.easyorder.mapper.CustomerMapper;
 import com.easyorder.mapper.FoodMapper;
 import com.easyorder.mapper.OrderMapper;
 import com.easyorder.service.OrderFoodService;
 import com.easyorder.service.OrderService;
 import com.easyorder.util.BaseExecuteException;
+
+import cn.hutool.core.date.DateUtil;
 
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
@@ -36,6 +41,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 	@Resource
 	CustomerMapper customerMapper;
+	@Resource
+	OrderMapper orderMapper;
+
 	/**
 	 * 查询订单
 	 */
@@ -83,8 +91,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		try {
 			boolean b;
 			if (order.getOrderFoodList() != null && order.getOrderFoodList().size() > 0) {
-				Customer customer=customerMapper.selectById(order.getCustomerId());
-				order.setOrderAmount(setAmount(order.getOrderFoodList(),customer.getCustomerVip()==CustomerVipEum.VIP.getState()));
+				Customer customer = customerMapper.selectById(order.getCustomerId());
+				order.setOrderAmount(setAmount(order.getOrderFoodList(),
+						customer.getCustomerVip() == CustomerVipEum.VIP.getState()));
 				QueryWrapper<OrderFood> q = new QueryWrapper<OrderFood>();
 				q.eq("order_id", order.getOrderId());
 				b = orderFoodService.remove(q);
@@ -115,9 +124,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	public BaseExecution<Order> insertOrder(Order order) {
 		try {
-			Customer customer=customerMapper.selectById(order.getCustomerId());
+			Customer customer = customerMapper.selectById(order.getCustomerId());
 			order.setCreateTime(new Date());
-			order.setOrderAmount(setAmount(order.getOrderFoodList(),customer.getCustomerVip()==CustomerVipEum.VIP.getState()));
+			order.setOrderAmount(
+					setAmount(order.getOrderFoodList(), customer.getCustomerVip() == CustomerVipEum.VIP.getState()));
 			boolean b = save(order);
 			if (!b) {
 				throw new BaseExecuteException("添加订单失败");
@@ -133,12 +143,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		} catch (BaseExecuteException e) {
 			return new BaseExecution<Order>(e.getMessage());
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			return new BaseExecution<Order>("未知错误");
 		}
 	}
 
 	// 计算订单金额
-	public Float setAmount(List<OrderFood> orderFoods,Boolean VIP) {
+	public Float setAmount(List<OrderFood> orderFoods, Boolean VIP) {
 		Float sum = 0f;
 		for (OrderFood of : orderFoods) {
 			Food food = foodMapper.selectById(of.getFoodId());
@@ -148,8 +159,46 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				sum += food.getFoodPromotionPrice() * of.getOrderFoodNum();
 			}
 		}
-		if(VIP) sum*=0.88f;
-		
-		return Float.valueOf(String.format(".2f%",sum));
+		if (VIP)
+			sum *= 0.88f;
+
+		return Float.valueOf(String.format("%.2f", sum));
+	}
+
+	// 统计订单信息
+	public BaseExecution<Object> statistiscOrder() {
+		// 统计今日营业额
+		SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+		List<Object> l = new ArrayList<>();
+		Date date = new Date();
+	
+		Date date1 = DateUtil.beginOfDay(date);
+		Date date2 = DateUtil.beginOfWeek(date);
+		QueryWrapper<Order> q = new QueryWrapper<Order>();
+		q.orderByAsc("pay_time");
+		q.eq("order_state",OrderStateEum.COMPLETE.getState());
+		q.lt("pay_time", date1);
+
+		List<Order> orders = orderMapper.selectList(q);
+		int effectiveOrder = 0;
+		float revenueDay = 0;
+
+		for (Order o : orders) {
+			if (DateUtil.endOfDay(date2).after(o.getPayTime()))
+				revenueDay += o.getOrderAmount();
+			else {
+				l.add(revenueDay);
+				revenueDay = o.getOrderAmount();
+				date2 = DateUtil.offsetDay(date2, 1);
+			}
+
+			if (o.getPayTime().after(date1)) {
+				effectiveOrder++;
+			}
+		}
+		if (l.size() < DateUtil.betweenDay(date2, date, true));
+			l.add(revenueDay);
+		l.add(effectiveOrder);
+		return new BaseExecution<Object>(ExecuteStateEum.SUCCESS, l);
 	}
 }

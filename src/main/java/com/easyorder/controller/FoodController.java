@@ -56,7 +56,7 @@ public class FoodController {
 			Food food = new Food();
 			food.setFoodName(foodName);
 			food.setFoodTag(foodTag);
-			
+
 			QueryWrapper<FoodCategory> q = new QueryWrapper<FoodCategory>();
 			q.eq("food_category_name", categoryName);
 			q.last("LIMIT 1");
@@ -83,14 +83,14 @@ public class FoodController {
 	public RBody getFood(@RequestParam Long foodId) {
 		if (foodId != null && foodId > 0) {
 			BaseExecution<Food> be = foodService.selectFoodByFoodId(foodId);
-			if(be.getTemp()==null) {
+			if (be.getTemp() == null) {
 				return RBody.ok("查询结果为空").data(be.getTemp());
 			}
-			FoodCategory foodCategory=foodCategoryService.getById(be.getTemp().getCategoryId());
+			FoodCategory foodCategory = foodCategoryService.getById(be.getTemp().getCategoryId());
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				RBody rBody = RBody.ok(be.getEum().getStateInfo());
 				rBody.data(be.getTemp());
-				rBody.put("foodCategoryName",foodCategory.getFoodCategoryName());
+				rBody.put("foodCategoryName", foodCategory.getFoodCategoryName());
 				return rBody;
 			} else {
 				return RBody.error(be.getEum().getStateInfo());
@@ -156,7 +156,7 @@ public class FoodController {
 			try {
 				BaseExecution<Food> be = foodService.insertFood(food, foodImg, foodImgMap);
 				if (be.getEum().getState() == ExecuteStateEum.SUCCESS.getState()) {
-					return RBody.ok("添加成功");
+					return RBody.ok("添加成功").put("foodImg", be.getTemp().getFoodImg());
 				} else {
 					return RBody.error(be.getEum().getStateInfo());
 				}
@@ -216,7 +216,11 @@ public class FoodController {
 			try {
 				BaseExecution<Food> be = foodService.updateFood(food, foodImg, foodImgMap);
 				if (be.getEum().getState() == ExecuteStateEum.SUCCESS.getState()) {
-					return RBody.ok(be.getEum().getStateInfo());
+					if (be.getTemp().getFoodImg() != null)
+						return RBody.ok(be.getEum().getStateInfo()).put("foodImg", be.getTemp().getFoodImg());
+					else
+						return RBody.ok(be.getEum().getStateInfo());
+
 				} else {
 					return RBody.error(be.getEum().getStateInfo());
 				}
@@ -231,7 +235,7 @@ public class FoodController {
 	@PostMapping("/deletefood")
 	@ResponseBody
 	public RBody deleteFood(@RequestBody Food food) {
-		if (food!=null&&food.getFoodId() != null && food.getFoodId() > 0) {
+		if (food != null && food.getFoodId() != null && food.getFoodId() > 0) {
 			BaseExecution<Food> be = foodService.deletFoodByFoodId(food.getFoodId());
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				RBody rBody = RBody.ok(be.getEum().getStateInfo());

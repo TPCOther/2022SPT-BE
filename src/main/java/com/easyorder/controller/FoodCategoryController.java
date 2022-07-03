@@ -122,4 +122,19 @@ public class FoodCategoryController {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 		}
 	}
+	
+	/**
+	 * 获取所有菜品以及对应菜品
+	 * 
+	 */
+	@GetMapping("/getallfoodandfoodcategory")
+	@ResponseBody
+	public RBody getAllFoodAndFoodcategory() {
+		BaseExecution<FoodCategory> be=foodCategoryService.selectFoodCategoryAndFoodAll();
+		if (be.getEum() == ExecuteStateEum.SUCCESS) {
+			return RBody.ok(be.getEum().getStateInfo()).data(be.getTList());
+		} else {
+			return RBody.error(be.getStateInfo());
+		}
+	}
 }

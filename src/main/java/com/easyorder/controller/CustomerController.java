@@ -1,5 +1,6 @@
 package com.easyorder.controller;
 
+
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,8 @@ import com.easyorder.service.CustomerService;
 import com.easyorder.util.HttpServletRequestUtil;
 import com.easyorder.util.RBody;
 import com.google.gson.Gson;
+
+import cn.hutool.json.JSONObject;
 
 @CrossOrigin(origins = { "*", "null" }) // 用于跨域请求，*代表允许响应所有的跨域请求
 // @SuppressWarnings("all") 用于忽略报错
@@ -44,19 +48,18 @@ public class CustomerController {
 		redisTemplate.opsForValue().set(token, customerId + "", caheExpire, TimeUnit.DAYS);
 	}
 
-	@PostMapping("/login")
+	@GetMapping("/login")
 	public RBody login(HttpServletRequest request) {
 		String code = HttpServletRequestUtil.getString(request, "code");
-		Long tableId=HttpServletRequestUtil.getLong(request,"tableId");
+		Long tableId = HttpServletRequestUtil.getLong(request, "tableId");
 		BaseExecution<Customer> be = customerService.login(code);
-		Long id = be.getTemp().getCustomerId();
-		if(id==null)
-			return RBody.error("没有该用户");
-		String token = jwtUtil.createToken(-1l);
-		saveCaheToken(token, id);
-		request.getSession().setAttribute("customer_id", id);
-		request.getSession().setAttribute("dinTableId", tableId);
 		if (be.getEum() == ExecuteStateEum.SUCCESS) {
+			Long id = be.getTemp().getCustomerId();
+
+			String token = jwtUtil.createToken(-1l);
+			saveCaheToken(token, id);
+			request.getSession().setAttribute("customer_id", id);
+			request.getSession().setAttribute("dinTableId", tableId);
 			return RBody.ok(be.getEum().getStateInfo()).put("token", token);
 		} else {
 			return RBody.error(be.getStateInfo());
@@ -77,20 +80,19 @@ public class CustomerController {
 	}
 
 	@PostMapping("/insert")
-	public RBody tableInsert(HttpServletRequest request) {
+	public RBody tableInsert(@RequestBody JSONObject json) {
 		RBody rbody = new RBody();
 		// 测试
-
-		String customerStr = HttpServletRequestUtil.getString(request, "customerStr");
+		String code = json.getStr("code");
+		json.remove("code");
 		Customer insertTable;
 		try {
-			insertTable = gson.fromJson(customerStr, Customer.class);
+			insertTable = gson.fromJson(json.toString(), Customer.class);
 		} catch (Exception e) {
 			return RBody.error("未知错误,请联系管理员");
 		}
-
+		
 		insertTable.setCustomerVip(CustomerVipEum.NOTVIP.getState());
-		String code = HttpServletRequestUtil.getString(request, "code");
 		BaseExecution<Customer> be = new BaseExecution<Customer>();
 		try {
 			be = this.customerService.insertCustomer(insertTable, code);

@@ -130,8 +130,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 	//访问微信平台获取openId
 	private String getOpenId(String code) {
 		String url="https://api.weixin.qq.com/sns/jscode2session";
-//				+ "?appId=wxa585593d5c61fa03&secret=b1e5906082004a292b17c93523608c4f&js_code="+code+"&grant_type=authorization_code";
-		System.out.println(appId+"\n"+appSecret);
 		Map<String,Object> map=new HashMap<>();
 		map.put("appid",appId);
 		map.put("secret", appSecret);
@@ -140,7 +138,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 		String response=HttpUtil.get(url,map);
 		JSONObject json=JSONUtil.parseObj(response);
 		String openId=json.getStr("openid");
-		System.out.println(response);
+//		System.out.println(response);
 		if(openId==null||openId.length()==0) {
 			throw new BaseExecuteException("获取授权失败");
 		}

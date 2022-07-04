@@ -1,8 +1,10 @@
 package com.easyorder.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -19,4 +21,10 @@ public class FoodCategory {
 	String foodCategoryDesc;
 	Integer priority;
 	Date createTime;
+	
+	
+	@TableField(exist = false)
+	List<Food> foodList;
+	
+	public FoodCategory() {}
 }	

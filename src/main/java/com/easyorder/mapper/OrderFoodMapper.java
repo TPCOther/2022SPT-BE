@@ -10,6 +10,6 @@ import com.easyorder.entity.OrderFood;
 import com.github.jeffreyning.mybatisplus.base.MppBaseMapper;
 
 public interface OrderFoodMapper extends MppBaseMapper<OrderFood> {
-	@Select("SELECT orf.*,f.food_name,f.food_normal_price,f.food_promotion_price " + "FROM food f,order_food orf " + "${ew.customSqlSegment} and f.food_id=orf.food_id")
+	@Select("SELECT orf.*,f.food_name,f.food_normal_price,f.food_promotion_price,f.food_img " + "FROM food f,order_food orf " + "${ew.customSqlSegment} and f.food_id=orf.food_id")
 	List<OrderFood> getOrderFoodList(@Param("ew") QueryWrapper<OrderFood> wapper);
 }

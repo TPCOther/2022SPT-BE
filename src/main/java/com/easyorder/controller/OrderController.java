@@ -136,7 +136,7 @@ public class OrderController {
 	@PostMapping("/insertorder")
 	@ResponseBody
 	public RBody insertOrder(@RequestBody Order order, HttpServletRequest request) {
-		if (order.getOrderFoodList() == null || order.getOrderFoodList().size() == 0)
+		if (order.getOrderFoodList() == null || order.getOrderFoodList().size() == 0||order.getDinTableId()==null||order.getDinTableId()<=0)
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 		Format f = new SimpleDateFormat("yyyyMMddhhmmss");
 		Random r = new Random();

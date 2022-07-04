@@ -24,5 +24,7 @@ public class OrderFood {
 	Float foodNormalPrice;
 	@TableField(exist = false)
 	Float foodPromotionPrice;
+	@TableField(exist = false)
+	String foodImg;
 	public OrderFood() {}
 }

@@ -26,6 +26,8 @@ import com.easyorder.service.StaffService;
 import com.easyorder.util.RBody;
 import com.google.gson.Gson;
 
+import cn.hutool.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -96,14 +98,16 @@ public class StaffController {
         BaseExecution<Staff> baseExecution=new BaseExecution<>();
         try {
             baseExecution=this.staffService.insertStaff(staff);
-            //创建jwt
             Long staffId = baseExecution.getTemp().getStaffId();
-            String token = jwtUtil.createToken(staffId);
-            redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
+            //创建jwt
+            // String token = jwtUtil.createToken(staffId);
+            // redisTemplate.opsForValue().set(token,staffId+"",cacheExpire, TimeUnit.DAYS);
+
             // TODO 获取权限列表
             List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
             Set<String> permsSet = new HashSet<>(permissionList);
-            rBody=RBody.ok("注册成功").data((baseExecution.getTemp().getStaffId())).token(token).put("permission",permsSet);
+            // rBody=RBody.ok("注册成功").data((baseExecution.getTemp().getStaffId())).token(token).put("permission",permsSet);
+            rBody=RBody.ok("注册成功").data((baseExecution.getTemp().getStaffId())).put("permission",permsSet);
         } catch (Exception e) {
             rBody=RBody.error(e.getMessage());
         }
@@ -111,7 +115,7 @@ public class StaffController {
     }
 
     @PostMapping("/login")
-    public RBody loginStaff(HttpServletRequest request)
+    public RBody loginStaff(@RequestBody JSONObject request)
     {
         RBody rBody=new RBody();
         BaseExecution<Long> baseExecution=new BaseExecution<>();

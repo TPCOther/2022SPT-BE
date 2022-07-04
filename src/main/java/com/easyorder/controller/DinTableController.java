@@ -26,8 +26,8 @@ public class DinTableController {
     private DinTableService dinTableService;
 
     @PostMapping("/select")
-    @RequiresPermissions("dinTable:select")
-    @RequiresRoles(value={"admin","customer"},logical = Logical.OR)
+    // @RequiresPermissions("dinTable:select")
+    // @RequiresRoles(value={"admin","customer"},logical = Logical.OR)
     public RBody dinTableSelect(@RequestBody DinTable selectDinTable){
         RBody rbody = new RBody();
         BaseExecution<DinTable> be = new BaseExecution<DinTable>();
@@ -48,7 +48,7 @@ public class DinTableController {
         BaseExecution<DinTable> be = new BaseExecution<DinTable>();
         try{
             be = this.dinTableService.insertDinTable(insertTable);
-            rbody=RBody.ok().data(be.getTemp().getDinTableId());
+            rbody=RBody.ok().data(be.getTemp());
         }catch(Exception e){
             rbody=RBody.error(e.toString());
         }

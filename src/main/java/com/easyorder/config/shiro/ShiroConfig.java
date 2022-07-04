@@ -46,11 +46,12 @@ public class ShiroConfig {
         // filterMap.put("/user/register","anon");
         // filterMap.put("/user/login","anon");
         // filterMap.put("/test/**","anon");
-        // filterMap.put("/**","anon");
+        filterMap.put("/**","anon");
         filterMap.put("/hello","anon");
         filterMap.put("/test","anon");
+        filterMap.put("/staff/**","anon");
         //拦截
-        filterMap.put("/**","oauth2");
+        // filterMap.put("/**","oauth2");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilter;

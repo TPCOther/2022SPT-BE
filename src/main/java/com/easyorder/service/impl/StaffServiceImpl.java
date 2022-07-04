@@ -31,8 +31,10 @@ import com.easyorder.util.HttpServletRequestUtil;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import cn.hutool.crypto.digest.BCrypt;
+import cn.hutool.json.JSONObject;
 @Service
 public class StaffServiceImpl implements StaffService{
 
@@ -92,28 +94,21 @@ public class StaffServiceImpl implements StaffService{
     @Override
     public BaseExecution<Staff> updateStaff(Staff staff) throws BaseExecuteException{
         BaseExecution<Staff> baseExecution=new BaseExecution<>();
-        //TODO:员工更新信息为空判断
-        if(StringUtils.isNotEmpty(staff.getStaffName())&&StringUtils.isNotEmpty(staff.getStaffGender())
-        &&staff.getStaffSalary()!=null&&StringUtils.isNotEmpty(staff.getStaffPosition())&&staff.getStaffPhone()!=null
-        &&StringUtils.isNotEmpty(staff.getStaffAccount())&&StringUtils.isNotEmpty(staff.getStaffPassword()))
+
+        // BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
+        // String encodePassword=bCryptPasswordEncoder.encode(staff.getStaffPassword());
+        // staff.setStaffPassword(encodePassword);
+        try {
+            int effctedNum=staffMapper.updateById(staff);
+        if(effctedNum<=0)
         {
-            // BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
-            // String encodePassword=bCryptPasswordEncoder.encode(staff.getStaffPassword());
-            // staff.setStaffPassword(encodePassword);
-            try {
-                int effctedNum=staffMapper.updateById(staff);
-            if(effctedNum<=0)
-            {
-                throw new BaseExecuteException("更新0条信息");
-            }
-            baseExecution.setEum(ExecuteStateEum.SUCCESS);
-            baseExecution.setTemp(staff);
-            return baseExecution;
-            } catch (Exception e) {
-                throw new BaseExecuteException("更新员工(staff)失败:"+e.getMessage());
-            }
-        }else{
-            throw new BaseExecuteException("更新员工(staff)失败:请检查name、gender、salary、position、phone、account、password是否正确");
+            throw new BaseExecuteException("更新0条信息");
+        }
+        baseExecution.setEum(ExecuteStateEum.SUCCESS);
+        baseExecution.setTemp(staff);
+        return baseExecution;
+        } catch (Exception e) {
+            throw new BaseExecuteException("更新员工(staff)失败:"+e.getMessage());
         }
     }
 
@@ -126,8 +121,17 @@ public class StaffServiceImpl implements StaffService{
         {
             staff.setStaffState(1);
         }
+        //判断账号是否存在
+        Staff staffTemp = new Staff();
+        staffTemp.setStaffAccount(staff.getStaffAccount());
+        List<Staff> staffTempList = selectStaffList(staffTemp).getTList();
+        if(staffTempList.size()>0){
+            throw new BaseExecuteException("账号已存在，请更改");
+        }
+
+
+
         Long long1=staffMapper.findDepartmentIdByDepartmentId(staff.getDepartmentId());
-        
         Long long2=staffMapper.findRoleIdByRoleId(staff.getRoleId());
         if(long1!=null&&long2!=null)
         {
@@ -148,7 +152,7 @@ public class StaffServiceImpl implements StaffService{
                     baseExecution.setTemp(staff);
                     return baseExecution;
                 } catch (Exception e) {
-                    throw new BaseExecuteException("创建员工(staff)失败:"+e.getMessage());
+                    throw new BaseExecuteException("创建员工(staff)失败,请检查相关信息");
                 }
             }else{
                 throw new BaseExecuteException("创建员工(staff)失败:请检查name、gender、salary、position、phone是否正确");
@@ -160,23 +164,27 @@ public class StaffServiceImpl implements StaffService{
     }
 
     @Override
-    public BaseExecution<Long> login(HttpServletRequest request) {
+    public BaseExecution<Long> login(JSONObject request) {
 
-        String account=HttpServletRequestUtil.getString(request, "staffAccount");
-        String password=HttpServletRequestUtil.getString(request, "staffPassword");
+        String account=request.getStr("staffAccount");
+        String password=request.getStr("staffPassword");
         BaseExecution<Long> baseExecution=new BaseExecution<>();
         try {
             String string=staffMapper.findPasswordByAccount(account);
+            if(StringUtils.isEmpty(string)){
+                throw new BaseExecuteException("登录失败！请检查用户名是否存在");
+            }
             Long staffId=staffMapper.findStaffIdByAccount(account);
             
-            if(BCrypt.checkpw(password, string));
-            {
+            if(BCrypt.checkpw(password, string)){
                 baseExecution.setEum(ExecuteStateEum.SUCCESS);
                 baseExecution.setTemp(staffId);
                 return baseExecution;
+            }else{
+                throw new BaseExecuteException("登录失败！密码错误！");
             }
         } catch (Exception e) {
-            throw new BaseExecuteException("登录失败！请检查staff_account、staff_password是否存在");
+            throw new BaseExecuteException("登录失败！密码错误或用户名不存在");
         }
 
         // UserExample userExample = new UserExample();

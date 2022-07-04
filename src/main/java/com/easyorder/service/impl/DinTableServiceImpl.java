@@ -19,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.DinTable;
+import com.easyorder.enums.DinTableStateEum;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.mapper.DinTableMapper;
+import com.easyorder.mapper.OrderMapper;
 import com.easyorder.service.BookingService;
 import com.easyorder.service.DinTableService;
 import com.easyorder.util.BaseExecuteException;
@@ -30,6 +32,8 @@ public class DinTableServiceImpl implements DinTableService {
     
     @Resource
     private DinTableMapper dinTableMapper;
+    @Resource
+    private OrderMapper orderMapper;
     @Autowired
     private BookingService bookingService;
 
@@ -51,8 +55,17 @@ public class DinTableServiceImpl implements DinTableService {
         try{
             // 检查预定桌台预定是否过期
             bookingService.checkBooking();
-            
-            List<DinTable> dinTableList = dinTableMapper.getDinTableArea(wapper);
+            //获取订单金额        
+            List<DinTable> dinTableList = dinTableMapper.getDinTableDetail(wapper);
+            for(DinTable tableTemp : dinTableList){
+                try{
+                    tableTemp.setTbOrderAmount(orderMapper.getOrderAmountByTableId(tableTemp.getDinTableId()));
+                }catch(Exception e){}
+                if(tableTemp.getTbOrderAmount()==null){
+                    tableTemp.setTbOrderAmount(0); 
+                }
+            }
+            System.out.println(dinTableList);
             baseExecution.setEum(ExecuteStateEum.SUCCESS);
             baseExecution.setTList(dinTableList);
             baseExecution.setCount(Long.valueOf(dinTableList.size()));
@@ -71,13 +84,16 @@ public class DinTableServiceImpl implements DinTableService {
         if(insertDinTable.getAreaId()==null){
             throw new BaseExecuteException("输入信息不完整");
         }
+        if(insertDinTable.getDinTableState()==null){
+            insertDinTable.setDinTableState(DinTableStateEum.IDLE.getState());
+        }
         try{
             int effctedNum = dinTableMapper.insert(insertDinTable);
             if(effctedNum <= 0){
                 throw new BaseExecuteException("插入0条数据");
             }
             baseExecution.setEum(ExecuteStateEum.SUCCESS);
-            baseExecution.setTemp(insertDinTable);
+            baseExecution.setTemp(selectDinTableById(insertDinTable.getDinTableId()).getTemp());
             return baseExecution;
             
         }catch(Exception e){       
@@ -135,17 +151,17 @@ public class DinTableServiceImpl implements DinTableService {
         wapper.eq(selectId!=null,"din_table_id",selectId);
 
         try{
-            List<DinTable> dinTableList = dinTableMapper.getDinTableArea(wapper);
-            // if(dinTableList.size()!=1){
-            //     throw new BaseExecuteException("查询桌台(DinTable)失败");
-            // }
+            List<DinTable> dinTableList = dinTableMapper.getDinTableDetail(wapper);
+            if(dinTableList.size()!=1){
+                throw new BaseExecuteException("查询桌台(DinTable)失败");
+            }
             DinTable selectTable = dinTableList.get(0);
             baseExecution.setEum(ExecuteStateEum.SUCCESS);
             baseExecution.setTemp(selectTable);
             baseExecution.setCount(Long.valueOf(dinTableList.size()));
             return baseExecution;
         }catch (Exception e) {
-            throw new BaseExecuteException("查询桌台(DinTable)失败: "+e.getMessage());
+            throw new BaseExecuteException("查询桌台(DinTable)失败");
         }
     }
     

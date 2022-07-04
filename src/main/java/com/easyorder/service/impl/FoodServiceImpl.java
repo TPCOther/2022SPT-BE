@@ -75,7 +75,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 					throw new BaseExecuteException("图片添加失败：" + e.getMessage());
 				}
 			}
-			return new BaseExecution<Food>(ExecuteStateEum.SUCCESS);
+			return new BaseExecution<Food>(ExecuteStateEum.SUCCESS,food);
 		} else {
 			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE);
 		}
@@ -114,7 +114,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 				throw new BaseExecuteException("更新失败:" + e.getMessage());
 			}
 		} else {
-			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE);
+			return new BaseExecution<Food>(ExecuteStateEum.INCOMPLETE,food);
 		}
 	}
 

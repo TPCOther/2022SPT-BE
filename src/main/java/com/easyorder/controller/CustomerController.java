@@ -91,6 +91,7 @@ public class CustomerController {
 		}
 		
 		insertTable.setCustomerVip(CustomerVipEum.NOTVIP.getState());
+		insertTable.setCustomerPoint(0);
 		BaseExecution<Customer> be = new BaseExecution<Customer>();
 		try {
 			be = this.customerService.insertCustomer(insertTable, code);

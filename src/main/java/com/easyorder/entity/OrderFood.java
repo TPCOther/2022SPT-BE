@@ -1,5 +1,6 @@
 package com.easyorder.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.github.jeffreyning.mybatisplus.anno.MppMultiId;
 
@@ -16,4 +17,12 @@ public class OrderFood {
 	Long foodId;
 	Integer orderFoodState;
 	Integer orderFoodNum;
+	
+	@TableField(exist = false)
+	String foodName;
+	@TableField(exist = false)
+	Float foodNormalPrice;
+	@TableField(exist = false)
+	Float foodPromotionPrice;
+	public OrderFood() {}
 }

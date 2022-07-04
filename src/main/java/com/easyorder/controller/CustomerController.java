@@ -58,9 +58,7 @@ public class CustomerController {
 
 			String token = jwtUtil.createToken(-1l);
 			saveCaheToken(token, id);
-			request.getSession().setAttribute("customer_id", id);
-			request.getSession().setAttribute("dinTableId", tableId);
-			return RBody.ok(be.getEum().getStateInfo()).put("token", token);
+			return RBody.ok(be.getEum().getStateInfo()).put("token", token).data(be.getTemp());
 		} else {
 			return RBody.error(be.getStateInfo());
 		}
@@ -80,7 +78,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/insert")
-	public RBody tableInsert(@RequestBody JSONObject json) {
+	public RBody tableInsert(@RequestBody JSONObject json,HttpServletRequest request) {
 		RBody rbody = new RBody();
 		// 测试
 		String code = json.getStr("code");
@@ -99,7 +97,7 @@ public class CustomerController {
 			Long id = be.getTemp().getCustomerId();
 			String token = jwtUtil.createToken(-1l);
 			saveCaheToken(token, id);
-			rbody = RBody.ok().data(be.getTemp().getCustomerId()).put("token", token);
+			rbody = RBody.ok().data(be.getTemp()).put("token", token);
 		} catch (Exception e) {
 			rbody = RBody.error(e.toString());
 		}

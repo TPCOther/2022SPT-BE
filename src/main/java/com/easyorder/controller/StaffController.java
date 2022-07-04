@@ -11,20 +11,17 @@ package com.easyorder.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.easyorder.dto.BaseExecution;
-import com.easyorder.entity.Permission;
-import com.easyorder.entity.Role;
-import com.easyorder.entity.Staff;
-import com.easyorder.service.StaffService;
-import com.easyorder.util.RBody;
-import com.google.gson.Gson;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Staff;
+import com.easyorder.service.StaffService;
+import com.easyorder.util.RBody;
+import com.google.gson.Gson;
 
 @CrossOrigin(origins = {"*","null"}) //用于跨域请求，*代表允许响应所有的跨域请求
 // @SuppressWarnings("all") 用于忽略报错

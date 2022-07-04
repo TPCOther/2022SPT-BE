@@ -22,12 +22,15 @@ import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.enums.OrderStateEum;
+import com.easyorder.service.FoodCategoryService;
 import com.easyorder.service.OrderFoodService;
 import com.easyorder.service.OrderService;
 import com.easyorder.util.BaseExecuteException;
 import com.easyorder.util.HttpServletRequestUtil;
 import com.easyorder.util.RBody;
 import com.google.gson.Gson;
+
+import cn.hutool.json.JSONObject;
 
 @CrossOrigin(origins = { "*", "null" }) // 用于跨域请求，*代表允许响应所有的跨域请求
 // @SuppressWarnings("all") 用于忽略报错
@@ -39,6 +42,9 @@ public class OrderController {
 
 	@Resource
 	OrderFoodService orderFoodService;
+
+	@Resource
+	FoodCategoryService foodCategoryService;
 	@Resource
 	Gson gson;
 
@@ -85,7 +91,7 @@ public class OrderController {
 	public RBody getOrderListByCustomer(HttpServletRequest request) {
 		Integer pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
 		Integer pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
-		Long customerId = (Long) request.getSession().getAttribute("customer_id");
+		Long customerId = HttpServletRequestUtil.getLong(request, "customerId");
 		Order order = new Order();
 		order.setCustomerId(customerId);
 		if (pageIndex == null || pageSize == null) {
@@ -129,28 +135,19 @@ public class OrderController {
 	 */
 	@PostMapping("/insertorder")
 	@ResponseBody
-	public RBody insertOrder(@RequestBody Order order,HttpServletRequest request) {
-//		String orderStr = HttpServletRequestUtil.getString(request, "orderStr");
-//		Order order = null;
-//		try {
-//			order = gson.fromJson(orderStr, Order.class);
-//		} catch (Exception e) {
-//			return RBody.error(ExecuteStateEum.INNER_ERROR.getStateInfo());
-//		}
-		if(order.getOrderFoodList()==null||order.getOrderFoodList().size()==0)
+	public RBody insertOrder(@RequestBody Order order, HttpServletRequest request) {
+		if (order.getOrderFoodList() == null || order.getOrderFoodList().size() == 0)
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
-		Format f=new SimpleDateFormat("yyyyMMddhhmmss");
-		Random r=new Random();
-		String orderId=f.format(new Date());
-		orderId+=r.nextInt(10);
+		Format f = new SimpleDateFormat("yyyyMMddhhmmss");
+		Random r = new Random();
+		String orderId = f.format(new Date());
+		orderId += r.nextInt(10);
 		order.setOrderId(Long.valueOf(orderId));
 		order.setOrderState(OrderStateEum.PENDING.getState());
-//		TODO:Long customerId = (Long) request.getSession().getAttribute("customer_id");
-//		order.setCustomerId(customerId);
 		BaseExecution<Order> be = orderService.insertOrder(order);
 		if (be.getEum() == ExecuteStateEum.SUCCESS) {
 			RBody rBody = RBody.ok(be.getEum().getStateInfo());
-			rBody.data(be.getTemp().getOrderId());
+			rBody.put("orderId", be.getTemp().getOrderId());
 			return rBody;
 		} else {
 			return RBody.error(be.getStateInfo());
@@ -162,10 +159,8 @@ public class OrderController {
 	 */
 	@PostMapping("/updateorder")
 	@ResponseBody
-	public RBody updateOrder(@RequestBody Order order) {
+	public RBody updateOrder(@RequestBody Order order, HttpServletRequest request) {
 		if (order != null && order.getOrderId() != null && order.getOrderId() > 0) {
-			if (order.getOrderState() == OrderStateEum.COMPLETE.getState())
-				order.setPayTime(new Date());
 			BaseExecution<Order> be = orderService.updateOrder(order);
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				return RBody.ok(be.getEum().getStateInfo());
@@ -196,17 +191,46 @@ public class OrderController {
 		} else
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 	}
+
 	/**
 	 * 订单统计
 	 */
 	@GetMapping("/statisticsorder")
 	@ResponseBody
 	public RBody statisticsOrder() {
-		//计算今日营业额
-		return null;
+		BaseExecution<Object> be2 = orderService.statistiscOrder();
+		BaseExecution<Long> be = foodCategoryService.selectCount();
+		if (be.getEum() == ExecuteStateEum.SUCCESS && be2.getEum() == ExecuteStateEum.SUCCESS) {
+			RBody rBody = RBody.ok(be.getEum().getStateInfo());
+			rBody.put("foodCount", be.getTList().get(0)).put("foodCategoryCount", be.getTList().get(1)).put("VIPCount",
+					be.getTList().get(2));
+			if (be2.getTList() != null && be2.getTList().size() > 0) {
+				rBody.put("effectiveOrder", be2.getTList().get(1));
+				rBody.put("revenueDay", be2.getTList().get(0));
+			}
+			return rBody;
+		} else {
+			return RBody.error(be.getStateInfo() + "\n" + be2.getStateInfo());
+		}
 	}
-	/**
-	 * 销售统计
-	 */
-	
+
+	@PostMapping("/getsalesitu")
+	@ResponseBody
+	public RBody getSaleSitu(@RequestBody JSONObject jsonObject) {
+		Date startDate = new Date();
+		Date endDate = new Date();
+		Long btime = jsonObject.getLong("btime");
+		Long etime = jsonObject.getLong("etime");
+		startDate.setTime(btime);
+		endDate.setTime(etime);
+		BaseExecution<Object> be = orderFoodService.statisticsOrderFood(startDate, endDate);
+		if (be.getEum() == ExecuteStateEum.SUCCESS) {
+			RBody rBody = RBody.ok(be.getEum().getStateInfo());
+			rBody.put("saleData", be.getTList().get(0));
+			rBody.put("dishData", be.getTList().get(1));
+			return rBody;
+		} else {
+			return RBody.error(be.getStateInfo());
+		}
+	}
 }

@@ -244,4 +244,6 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 			ImageUtil.deleteFile(x.getFoodImgUrl());
 		}
 	}
+
+
 }

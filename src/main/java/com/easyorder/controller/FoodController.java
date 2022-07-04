@@ -246,4 +246,5 @@ public class FoodController {
 		}
 		return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 	}
+
 }

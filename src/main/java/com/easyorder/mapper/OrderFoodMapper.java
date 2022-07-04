@@ -6,11 +6,10 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
 import com.github.jeffreyning.mybatisplus.base.MppBaseMapper;
 
 public interface OrderFoodMapper extends MppBaseMapper<OrderFood> {
-	@Select("SELECT orf.*" + "FROM tb_order o,order_food orf " + "${ew.customSqlSegment} and o.order_id=orf.order_id")
-	List<OrderFood> getOrderFoodList(@Param("ew") QueryWrapper<Order> wapper);
+	@Select("SELECT orf.*,f.food_name,f.food_normal_price,f.food_promotion_price " + "FROM food f,order_food orf " + "${ew.customSqlSegment} and f.food_id=orf.food_id")
+	List<OrderFood> getOrderFoodList(@Param("ew") QueryWrapper<OrderFood> wapper);
 }

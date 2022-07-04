@@ -2,9 +2,7 @@ package com.easyorder.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -58,7 +56,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			q.eq(order.getOrderId() != null, "order_id", order.getOrderId());
 			q.eq(order.getCustomerId() != null, "customer_id", order.getCustomerId());
 			q.eq(order.getStaffId() != null, "staff_id", order.getStaffId());
-			q.eq(order.getDinTableId() != null, "table_id", order.getDinTableId());
+			q.eq(order.getDinTableId() != null, "din_table_id", order.getDinTableId());
 			q.eq(order.getOrderState() != null, "order_state", order.getOrderState());
 			q.orderByDesc("create_time");
 			List<Order> orderList = null;
@@ -75,13 +73,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			for (Order o : orderList) {
 				QueryWrapper<OrderFood> queryWrapper = new QueryWrapper<OrderFood>();
 				queryWrapper.eq("order_id", o.getOrderId());
-				List<OrderFood> orderFoods = orderFoodService.list(queryWrapper);
+				List<OrderFood> orderFoods = orderFoodMapper.getOrderFoodList(queryWrapper);
 				o.setOrderFoodList(orderFoods);
 			}
 			be.setEum(ExecuteStateEum.SUCCESS);
 			be.setTList(orderList);
 			return be;
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			return new BaseExecution<Order>("未知错误");
 		}
 	}
@@ -94,8 +93,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public BaseExecution<Order> updateOrder(Order order) {
 		try {
 			boolean b;
+			Customer customer = customerMapper.selectById(order.getCustomerId());
 			if (order.getOrderFoodList() != null && order.getOrderFoodList().size() > 0) {
-				Customer customer = customerMapper.selectById(order.getCustomerId());
 				order.setOrderAmount(setAmount(order.getOrderFoodList(),
 						customer.getCustomerVip() == CustomerVipEum.VIP.getState()));
 				QueryWrapper<OrderFood> q = new QueryWrapper<OrderFood>();
@@ -109,11 +108,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					throw new BaseExecuteException("修改订单菜品列表失败");
 				}
 			}
-			b = updateById(order);
-			if (!b) {
-				throw new BaseExecuteException("修改订单失败");
+			if (order.getOrderState() != null && order.getOrderState() == OrderStateEum.COMPLETE.getState()) {
+				order.setPayTime(new Date());
+				b = updateById(order);
+				if (!b) {
+					throw new BaseExecuteException("修改订单失败");
+				}
+				float point=order.getOrderAmount();
+				customer.setCustomerPoint(customer.getCustomerPoint()+(int)point);
+				if(customer.getCustomerPoint()>1000&&customer.getCustomerVip()==CustomerVipEum.NOTVIP.getState()) {
+					customer.setCustomerVip(CustomerVipEum.VIP.getState());
+				}
+				int x = customerMapper.updateById(customer);
+				if (x<=0) {
+					throw new BaseExecuteException("积分增加失败");
+				}
+				return new BaseExecution<Order>(ExecuteStateEum.SUCCESS);
+			}else {
+				b = updateById(order);
+				if (!b) {
+					throw new BaseExecuteException("修改订单失败");
+				}
+				return new BaseExecution<Order>(ExecuteStateEum.SUCCESS);
 			}
-			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS);
 		} catch (BaseExecuteException e) {
 			return new BaseExecution<Order>(e.getMessage());
 		} catch (Exception e) {
@@ -172,31 +189,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	// 统计订单信息
 	public BaseExecution<Object> statistiscOrder() {
 		// 统计今日营业额
-		List<Object> l = new ArrayList<>();
-		Date end_date = new Date();
-		Date start_date = DateUtil.beginOfWeek(end_date);
-		QueryWrapper<Order> q = new QueryWrapper<Order>();
-		q.eq("order_state",OrderStateEum.COMPLETE.getState());
-		q.lt("pay_time", end_date);
-		q.ge("pay_time",start_date);
-		List<Order> orders = orderMapper.selectList(q);
-		List<OrderFood> orderFoods=orderFoodMapper.getOrderFoodList(q);
-		int effectiveOrder = 0;
-		float revenueDay[] = new float[(int)(DateUtil.betweenDay(start_date, end_date,true))];
-		Map<Long,Integer> foodMap=new HashMap<>();
-		for (Order o : orders) {
-			int offset=(int)DateUtil.betweenDay(start_date, o.getPayTime(), true);
-			revenueDay[offset]+=o.getOrderAmount();
-			if(offset==revenueDay.length-1) {
-				effectiveOrder++;
+		try {
+			List<Object> l = new ArrayList<>();
+			Date end_date = new Date();
+			Date start_date = DateUtil.beginOfWeek(end_date);
+			QueryWrapper<Order> q = new QueryWrapper<Order>();
+			q.eq("order_state",OrderStateEum.COMPLETE.getState());
+			q.le("pay_time", end_date);
+			q.ge("pay_time",start_date);
+			List<Order> orders = orderMapper.selectList(q);
+			int effectiveOrder = 0;
+			float revenueDay[] = new float[7];
+			for (Order o : orders) {
+				int offset=(int)DateUtil.betweenDay(start_date, o.getPayTime(), true);
+				revenueDay[offset]+=o.getOrderAmount();
+				if(offset==revenueDay.length-1) {
+					effectiveOrder++;
+				}
 			}
+			l.add(revenueDay);
+			l.add(effectiveOrder);
+			return new BaseExecution<Object>(ExecuteStateEum.SUCCESS, l);
+		}catch (Exception e) {
+			return new BaseExecution<Object>(e.getMessage());
 		}
-		for(OrderFood of:orderFoods) {
-			foodMap.put(of.getFoodId(),foodMap.getOrDefault(of.getFoodId(),0)+of.getOrderFoodNum());
-		}
-		l.add(revenueDay);
-		l.add(effectiveOrder);
-		l.add(foodMap);
-		return new BaseExecution<Object>(ExecuteStateEum.SUCCESS, l);
+		
+		
 	}
+	
 }

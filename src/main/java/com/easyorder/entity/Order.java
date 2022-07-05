@@ -23,6 +23,7 @@ public class Order {
 	Date createTime;
 	Date payTime;
 	String orderEvaluation;//评价
+	Integer orderPayMethod;
 	
 	Long customerId;
 	Long staffId;

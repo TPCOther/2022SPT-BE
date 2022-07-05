@@ -1,7 +1,9 @@
 package com.easyorder.enums;
 
 public enum OrderStateEum {
-	CANCEL(0,"已取消"),PENDING(1,"待处理"),PROCESSING(2,"处理中"),UNPAY(3,"未支付"),COMPLETE(4,"已完成");
+	CANCEL(0,"已取消"),PENDING(1,"待处理"),PROCESSING(2,"处理中"),UNPAY(3,"未支付"),COMPLETE(4,"已完成"),
+	
+	WECHAT(1,"微信"),ALIPAY(2,"支付宝");
 	private int state;
 	private String stateInfo;
 

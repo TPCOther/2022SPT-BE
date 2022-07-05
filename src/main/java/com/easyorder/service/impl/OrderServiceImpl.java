@@ -134,7 +134,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		} catch (BaseExecuteException e) {
 			return new BaseExecution<Order>(e.getMessage());
 		} catch (Exception e) {
-//			System.out.println(e.getMessage());
+			System.out.println(e.getMessage());
 			return new BaseExecution<Order>("未知错误");
 		}
 	}

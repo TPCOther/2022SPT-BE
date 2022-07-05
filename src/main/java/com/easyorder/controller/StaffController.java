@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 15:27:57
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-02 16:13:24
+ * @LastEditTime: 2022-07-05 09:31:13
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\controller\StaffController.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -28,6 +28,7 @@ import com.easyorder.config.shiro.JwtUtil;
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Staff;
 import com.easyorder.service.PermissionService;
+import com.easyorder.service.RoleService;
 import com.easyorder.service.StaffService;
 import com.easyorder.util.RBody;
 import com.google.gson.Gson;
@@ -51,6 +52,8 @@ public class StaffController {
 
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private RoleService roleService;
 
     @Value("${easyorder.jwt.cache-expire}")
     private int cacheExpire;
@@ -132,13 +135,13 @@ public class StaffController {
     }
 
 
-    // @GetMapping("/test")
+    // @PostMapping("/test")
     // public RBody test(Long id)
     // {
-    //     BaseExecution<Role> baseExecution=new BaseExecution<>();
+    //     BaseExecution<String> baseExecution=new BaseExecution<>();
     //     RBody rBody=new RBody();
     //     try {
-    //         baseExecution=this.staffService.test(1l);
+    //         baseExecution=this.roleService.getControllerMenuNameListById(1l);
     //         rBody=RBody.ok().data((baseExecution.getTList()));
     //     } catch (Exception e) {
     //         rBody=RBody.error(e.getMessage());

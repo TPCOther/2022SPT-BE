@@ -30,7 +30,6 @@ public interface RolePermissionMapper extends BaseMapper<RolePermission> {
     List<Long> findRoleIdListByPermissionId(@Param("id")Long id);
 
     @Select("SELECT role_permission.permission_id "+"FROM role_permission,role "+" WHERE role.role_id=#{id} "+"AND role_permission.role_id=role.role_id")
-
     Long findPermissionIdByRoleId(@Param("id")Long id);
 
     @Select("SELECT role_permission.permission_id "+"FROM role_permission,role "+" WHERE role.role_id=#{id} "+"AND role_permission.role_id=role.role_id")

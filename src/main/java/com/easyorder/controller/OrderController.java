@@ -3,7 +3,9 @@ package com.easyorder.controller;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.Resource;
@@ -22,6 +24,7 @@ import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.enums.OrderStateEum;
+import com.easyorder.service.CustomerService;
 import com.easyorder.service.FoodCategoryService;
 import com.easyorder.service.OrderFoodService;
 import com.easyorder.service.OrderService;
@@ -44,10 +47,27 @@ public class OrderController {
 	OrderFoodService orderFoodService;
 
 	@Resource
+	CustomerService customerService;
+	@Resource
 	FoodCategoryService foodCategoryService;
 	@Resource
 	Gson gson;
 
+	
+	
+	//
+	@GetMapping("/getorderevaluation")
+	@ResponseBody
+	public RBody getOrderEvaluation() {
+		BaseExecution<Order> be =orderService.selectOrder();
+		if (be.getEum() == ExecuteStateEum.SUCCESS) {
+			RBody rBody = RBody.ok(be.getEum().getStateInfo());
+			rBody.data(be.getTList());
+			return rBody;
+		} else {
+			return RBody.error(be.getStateInfo());
+		}
+	}
 	// 管理员 后厨人员 服务员 餐桌
 	/**
 	 * 查询订单信息
@@ -62,8 +82,19 @@ public class OrderController {
 		Order order = new Order();
 		Integer pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
 		Integer pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
-
-		order.setCustomerId(HttpServletRequestUtil.getLong(request, "customerId"));
+		String customerNickname = HttpServletRequestUtil.getString(request, "customerNickname");
+		Long btime = HttpServletRequestUtil.getLong(request, "btime");
+		Long etime = HttpServletRequestUtil.getLong(request, "etime");
+		Date startDate = null, endDate = null;
+		if (btime != null && etime != null) {
+			startDate = new Date();
+			startDate.setTime(btime);
+			endDate = new Date();
+			endDate.setTime(etime);
+		}
+		Double maxAmount = HttpServletRequestUtil.getDouble(request, "maxAmount");
+		Double minAmount = HttpServletRequestUtil.getDouble(request, "minAmount");
+		order.setOrderPayMethod(HttpServletRequestUtil.getInt(request, "orderPayMethod"));
 		order.setDinTableId(HttpServletRequestUtil.getLong(request, "dinTableId"));
 		order.setOrderId(HttpServletRequestUtil.getLong(request, "orderId"));
 		order.setOrderState(HttpServletRequestUtil.getInt(request, "orderState"));
@@ -73,7 +104,8 @@ public class OrderController {
 			pageIndex = -1;
 			pageSize = -1;
 		}
-		BaseExecution<Order> be = orderService.selectOrder(order, pageSize, pageIndex);
+		BaseExecution<Order> be = orderService.selectOrder(order, pageSize, pageIndex, customerNickname, startDate,
+				endDate, maxAmount, minAmount);
 		if (be.getEum() == ExecuteStateEum.SUCCESS) {
 			RBody rBody = RBody.ok(be.getEum().getStateInfo());
 			rBody.data(be.getTList());
@@ -136,9 +168,10 @@ public class OrderController {
 	@PostMapping("/insertorder")
 	@ResponseBody
 	public RBody insertOrder(@RequestBody Order order, HttpServletRequest request) {
-		if (order.getOrderFoodList() == null || order.getOrderFoodList().size() == 0||order.getDinTableId()==null||order.getDinTableId()<=0)
+		if (order.getOrderFoodList() == null || order.getOrderFoodList().size() == 0 || order.getDinTableId() == null
+				|| order.getDinTableId() <= 0||order.getCustomerId()==null||order.getCustomerId()<=0 )
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
-		Format f = new SimpleDateFormat("yyyyMMddhhmmss");
+		Format f = new SimpleDateFormat("yyyyMMddHHmmss");
 		Random r = new Random();
 		String orderId = f.format(new Date());
 		orderId += r.nextInt(10);
@@ -163,7 +196,10 @@ public class OrderController {
 		if (order != null && order.getOrderId() != null && order.getOrderId() > 0) {
 			BaseExecution<Order> be = orderService.updateOrder(order);
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
-				return RBody.ok(be.getEum().getStateInfo());
+				if (be.getTemp() == null)
+					return RBody.ok(be.getEum().getStateInfo()).data(be.getTemp());
+				else
+					return RBody.ok(be.getEum().getStateInfo()).data(be.getTemp().getOrderAmount());
 			} else {
 				return RBody.error(be.getStateInfo());
 			}
@@ -201,13 +237,19 @@ public class OrderController {
 		BaseExecution<Object> be2 = orderService.statistiscOrder();
 		BaseExecution<Long> be = foodCategoryService.selectCount();
 		if (be.getEum() == ExecuteStateEum.SUCCESS && be2.getEum() == ExecuteStateEum.SUCCESS) {
+			Map<String, Object> map = new HashMap<>();
 			RBody rBody = RBody.ok(be.getEum().getStateInfo());
-			rBody.put("foodCount", be.getTList().get(0)).put("foodCategoryCount", be.getTList().get(1)).put("VIPCount",
-					be.getTList().get(2));
-			if (be2.getTList() != null && be2.getTList().size() > 0) {
-				rBody.put("effectiveOrder", be2.getTList().get(1));
-				rBody.put("revenueDay", be2.getTList().get(0));
+			map.put("foodCount", be.getTList().get(0));
+			map.put("foodCategoryCount", be.getTList().get(1));
+			map.put("VIPCount", be.getTList().get(2));
+			if (be2.getTList() != null) {
+				map.put("effectiveOrder", be2.getTList().get(1));
+				map.put("revenueDay", be2.getTList().get(0));
+			} else {
+				map.put("effectiveOrder", null);
+				map.put("revenueDay", null);
 			}
+			rBody.data(map);
 			return rBody;
 		} else {
 			return RBody.error(be.getStateInfo() + "\n" + be2.getStateInfo());
@@ -226,8 +268,15 @@ public class OrderController {
 		BaseExecution<Object> be = orderFoodService.statisticsOrderFood(startDate, endDate);
 		if (be.getEum() == ExecuteStateEum.SUCCESS) {
 			RBody rBody = RBody.ok(be.getEum().getStateInfo());
-			rBody.put("saleData", be.getTList().get(0));
-			rBody.put("dishData", be.getTList().get(1));
+			Map<String, Object> map = new HashMap<>();
+			if (be.getTList() != null) {
+				map.put("saleData", be.getTList().get(0));
+				map.put("dishData", be.getTList().get(1));
+			} else {
+				map.put("saleData", null);
+				map.put("dishData", null);
+			}
+			rBody.data(map);
 			return rBody;
 		} else {
 			return RBody.error(be.getStateInfo());

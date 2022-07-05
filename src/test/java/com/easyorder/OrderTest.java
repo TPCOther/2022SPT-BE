@@ -93,13 +93,13 @@ public class OrderTest extends BaseTest {
 
 	@Test
 	public void test() {
-		Date date1 = new Date();
-		Date date2 = DateUtil.beginOfMonth(date1);
-
-		BaseExecution<Object> be = ofs.statisticsOrderFood(date2, date1);
-
-		System.out.println(gson.toJson(be));
-		System.out.println(date1.getTime());
-		System.out.println(date2.getTime());
+		List<Integer> a=new ArrayList<Integer>();
+		a.add(1);
+		a.add(null);
+//		BaseExecution<Object> be = ofs.statisticsOrderFood(date2, date1);
+//
+//		System.out.println(gson.toJson(be));
+		System.out.println(a.get(0));
+		System.out.println(a.get(1));
 	}
 }

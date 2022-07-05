@@ -45,11 +45,12 @@ public class OrderFoodServiceImpl extends MppServiceImpl<OrderFoodMapper, OrderF
 				q1.eq("order_id", o.getOrderId());
 				if (o.getOrderPayMethod() != null) {
 					if (o.getOrderPayMethod() == OrderStateEum.WECHAT.getState()) {
-						payMap.put("微信支付", payMap.getOrDefault("微信支付", 0f) + o.getOrderAmount());
+						payMap.put("Wechat", payMap.getOrDefault("Wechat", 0f) + o.getOrderAmount());
+//						System.out.println(o.getOrderAmount());
 					} else if (o.getOrderPayMethod() == OrderStateEum.ALIPAY.getState()) {
-						payMap.put("支付宝", payMap.getOrDefault("支付宝", 0f) + o.getOrderAmount());
+						payMap.put("Alipay", payMap.getOrDefault("Alipay", 0f) + o.getOrderAmount());
 					} else {
-						payMap.put("其他支付", payMap.getOrDefault("其他支付", 0f) + o.getOrderAmount());
+						payMap.put("Else", payMap.getOrDefault("Else", 0f) + o.getOrderAmount());
 					}
 				}
 				List<OrderFood> l2 = orderFoodMapper.getOrderFoodList(q1);
@@ -57,8 +58,15 @@ public class OrderFoodServiceImpl extends MppServiceImpl<OrderFoodMapper, OrderF
 					foodMap.put(of.getFoodName(), foodMap.getOrDefault(of.getFoodName(), 0) + of.getOrderFoodNum());
 				}
 			}
+			List<Object[]> foodList=new ArrayList<>();
+			for(String foodname:foodMap.keySet()) {
+				Object[] t=new Object[2];
+				t[0]=foodname;
+				t[1]=foodMap.get(foodname);
+				foodList.add(t);
+			}
 			l.add(payMap);
-			l.add(foodMap);
+			l.add(foodList);
 			return new BaseExecution<Object>(ExecuteStateEum.SUCCESS, l);
 		} catch (Exception e) {
 			return new BaseExecution<Object>("未知错误");

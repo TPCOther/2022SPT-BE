@@ -1,6 +1,5 @@
 package com.easyorder.controller;
 
-
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -52,7 +51,6 @@ public class CustomerController {
 	@GetMapping("/login")
 	public RBody login(HttpServletRequest request) {
 		String code = HttpServletRequestUtil.getString(request, "code");
-		Long tableId = HttpServletRequestUtil.getLong(request, "tableId");
 		BaseExecution<Customer> be = customerService.login(code);
 		if (be.getEum() == ExecuteStateEum.SUCCESS) {
 			Long id = be.getTemp().getCustomerId();
@@ -92,7 +90,7 @@ public class CustomerController {
 		} catch (Exception e) {
 			return RBody.error("未知错误,请联系管理员");
 		}
-		
+
 		insertTable.setCustomerVip(CustomerVipEum.NOTVIP.getState());
 		insertTable.setCustomerPoint(0);
 		BaseExecution<Customer> be = new BaseExecution<Customer>();

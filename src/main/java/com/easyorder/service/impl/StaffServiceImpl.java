@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 15:00:54
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-02 16:04:27
+ * @LastEditTime: 2022-07-04 18:05:51
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\StaffServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -127,7 +127,6 @@ public class StaffServiceImpl implements StaffService{
             staff.setStaffState(1);
         }
         Long long1=staffMapper.findDepartmentIdByDepartmentId(staff.getDepartmentId());
-        
         Long long2=staffMapper.findRoleIdByRoleId(staff.getRoleId());
         if(long1!=null&&long2!=null)
         {
@@ -167,11 +166,14 @@ public class StaffServiceImpl implements StaffService{
         BaseExecution<Staff> baseExecution=new BaseExecution<>();
         try {
             String string=staffMapper.findPasswordByAccount(account);
-            
-            if(BCrypt.checkpw(password, string));
+            //password=BCrypt.hashpw(password);
+            System.out.println(BCrypt.checkpw(password, string));
+            if(BCrypt.checkpw(password, string))
             {
                 baseExecution.setEum(ExecuteStateEum.SUCCESS);
                 return baseExecution;
+            }else{
+                throw new BaseExecuteException("登录失败，请检查staff_account、staffpassword是否正确");
             }
         } catch (Exception e) {
             throw new BaseExecuteException("登录失败！请检查staff_account、staff_password是否存在");

@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.FoodCategory;
+import com.easyorder.entity.Order;
 import com.easyorder.enums.ExecuteStateEum;
+import com.easyorder.enums.OrderStateEum;
 import com.easyorder.service.FoodCategoryService;
+import com.easyorder.service.OrderService;
 import com.easyorder.util.HttpServletRequestUtil;
 import com.easyorder.util.RBody;
 import com.google.gson.Gson;
@@ -29,8 +32,12 @@ import com.google.gson.Gson;
 public class FoodCategoryController {
 	@Resource
 	FoodCategoryService foodCategoryService;
+
+	@Resource
+	OrderService orderService;
 	@Resource
 	Gson gson;
+
 	/**
 	 * 查询菜品种类 有分页信息就分页，没有就不分页
 	 * 
@@ -83,8 +90,10 @@ public class FoodCategoryController {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 		}
 	}
+
 	/**
 	 * 删除菜品种类
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -103,38 +112,71 @@ public class FoodCategoryController {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 		}
 	}
+
 	/**
 	 * 修改
+	 * 
 	 * @param foodCategory
 	 * @return
 	 */
 	@PostMapping("/updatefoodcategory")
 	@ResponseBody
 	public RBody updateFoodCategory(@RequestBody FoodCategory foodCategory) {
-		if(foodCategory!=null&&foodCategory.getFoodCategoryId()!=null&&foodCategory.getFoodCategoryId()>0) {
-			BaseExecution<FoodCategory> be =foodCategoryService.updateFoodCategory(foodCategory);
+		if (foodCategory != null && foodCategory.getFoodCategoryId() != null && foodCategory.getFoodCategoryId() > 0) {
+			BaseExecution<FoodCategory> be = foodCategoryService.updateFoodCategory(foodCategory);
 			if (be.getEum() == ExecuteStateEum.SUCCESS) {
 				return RBody.ok(be.getEum().getStateInfo());
 			} else {
 				return RBody.error(be.getStateInfo());
 			}
-		}else {
+		} else {
 			return RBody.error(ExecuteStateEum.INPUT_ERROR.getStateInfo());
 		}
 	}
-	
+
 	/**
 	 * 获取所有菜品以及对应菜品
 	 * 
 	 */
 	@GetMapping("/getallfoodandfoodcategory")
 	@ResponseBody
-	public RBody getAllFoodAndFoodcategory() {
-		BaseExecution<FoodCategory> be=foodCategoryService.selectFoodCategoryAndFoodAll();
-		if (be.getEum() == ExecuteStateEum.SUCCESS) {
-			return RBody.ok(be.getEum().getStateInfo()).data(be.getTList());
+	public RBody getAllFoodAndFoodcategory(HttpServletRequest request) {
+		BaseExecution<FoodCategory> be = foodCategoryService.selectFoodCategoryAndFoodAll();
+		Order order = new Order();
+		Long dinTableId = HttpServletRequestUtil.getLong(request, "dinTableId");
+		RBody rBody = new RBody();
+		if (dinTableId != null && dinTableId > 0) {
+			order.setDinTableId(dinTableId);
+			BaseExecution<Order> be2 = orderService.selectOrder(order, 1, 1);
+			if (be.getEum() == ExecuteStateEum.SUCCESS && be2.getEum() == ExecuteStateEum.SUCCESS) {
+				if (be2.getTList() != null && be2.getTList().size() > 0) {
+					order = be2.getTList().get(0);
+					if (order.getOrderState() != OrderStateEum.COMPLETE.getState()) {
+						rBody.put("order", order.getOrderFoodList());
+					}else {
+						rBody.put("order", null);
+					}
+				}
+				rBody.put("code", ExecuteStateEum.SUCCESS.getState());
+				rBody.put("msg", be.getEum().getStateInfo());
+				rBody.data(be.getTList());
+			} else {
+				rBody.put("code", ExecuteStateEum.INNER_ERROR.getState());
+				rBody.put("msg", be.getStateInfo() + "\n" + be2.getStateInfo());
+			}
 		} else {
-			return RBody.error(be.getStateInfo());
+			if (be.getEum() == ExecuteStateEum.SUCCESS) {
+				rBody.put("code", ExecuteStateEum.SUCCESS.getState());
+				rBody.put("msg", be.getEum().getStateInfo());
+				rBody.data(be.getTList());
+
+			} else {
+				rBody.put("code", ExecuteStateEum.INNER_ERROR.getState());
+				rBody.put("msg", be.getStateInfo());
+			}
 		}
+
+		return rBody;
 	}
+
 }

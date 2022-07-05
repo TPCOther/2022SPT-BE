@@ -26,7 +26,7 @@ public class Customer {
 	
 	private String customerGender;
 	
-	private Integer customerPhone;
+	private Long customerPhone;
 	
 	private Integer customerPoint;//顾客积分
 	

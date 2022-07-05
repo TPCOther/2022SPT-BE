@@ -15,7 +15,8 @@ public interface DinTableMapper extends BaseMapper<DinTable> {
      */
     @Select("SELECT din_table.*,area.`area_name` "+
             "FROM din_table,area "+
-            "${ew.customSqlSegment} and din_table.area_id=area.area_id")
-    List<DinTable> getDinTableArea(@Param("ew")QueryWrapper<DinTable> wapper);
+            "${ew.customSqlSegment} and din_table.area_id=area.area_id "+
+            "ORDER BY din_table_id")
+    List<DinTable> getDinTableDetail(@Param("ew")QueryWrapper<DinTable> wapper);
     
 }

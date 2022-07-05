@@ -15,4 +15,6 @@ public interface FoodCategoryService extends IService<FoodCategory> {
 	BaseExecution<FoodCategory> deleteFoodCategory(Long foodCategoryId);
 
 	BaseExecution<FoodCategory> updateFoodCategory(FoodCategory foodCategory);
+	
+	BaseExecution<FoodCategory> selectFoodCategoryAndFoodAll();
 }

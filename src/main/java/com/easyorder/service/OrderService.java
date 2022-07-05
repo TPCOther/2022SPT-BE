@@ -8,4 +8,5 @@ public interface OrderService extends IService<Order>{
 	BaseExecution<Order> selectOrder(Order order,Integer pageSize,Integer pageIndex);
 	BaseExecution<Order> updateOrder(Order order);
 	BaseExecution<Order> insertOrder(Order order);
+	BaseExecution<Object> statistiscOrder();
 }

@@ -1,4 +1,4 @@
-emos:
+easyorder:
     jwt:
         secret: abc123456
         expire: 5

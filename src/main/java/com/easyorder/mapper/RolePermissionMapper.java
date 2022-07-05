@@ -13,6 +13,8 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.easyorder.entity.RolePermission;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -25,14 +27,15 @@ public interface RolePermissionMapper extends BaseMapper<RolePermission> {
     Long findPermissionId(@Param("id")Long id);
 
     @Select("SELECT role_permission.role_id "+"FROM role_permission,permission "+" WHERE permission.permission_id=#{id} "+"AND role_permission.permission_id=permission.permission_id")
-    Long findRoleIdByPermissionId(@Param("id")Long id);
+    List<Long> findRoleIdListByPermissionId(@Param("id")Long id);
 
     @Select("SELECT role_permission.permission_id "+"FROM role_permission,role "+" WHERE role.role_id=#{id} "+"AND role_permission.role_id=role.role_id")
+
     Long findPermissionIdByRoleId(@Param("id")Long id);
 
     @Select("SELECT role_permission.permission_id "+"FROM role_permission,role "+" WHERE role.role_id=#{id} "+"AND role_permission.role_id=role.role_id")
     List<Long> findPermissionIdListByRoleId(@Param("id")Long id);
 
-    @Select("SELECT role_permission.role_id "+"FROM role_permission,permission "+" WHERE permission.permission_id=#{id} "+"AND role_permission.permission_id=permission.permission_id")
-    List<Long> findRoleIdListByPermissionId(@Param("id")Long id);
+
+
 }

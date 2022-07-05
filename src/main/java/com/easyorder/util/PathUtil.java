@@ -19,7 +19,7 @@ public class PathUtil {
 		String os=System.getProperty("os.name");
 		String basePath;
 		if(os.toLowerCase().startsWith("win")) {
-			basePath="E:/EasyOrder/image/"; 
+			basePath="D:/EasyOrder/image/"; 
 		}else {
 			basePath="/EasyOrder/image/";
 		}

@@ -160,5 +160,14 @@ public class RoleServiceImpl implements RoleService{
             throw new BaseExecuteException("删除角色(role)失败:"+e.getMessage());
         }
     }
+
+    @Override
+    public BaseExecution<String> getRoleNameByStaffId(Long staffId) throws BaseExecuteException {
+        BaseExecution<String> baseExecution=new BaseExecution<>();
+        Long roleId=staffMapper.findRoleIdByStaffId(staffId);
+        String roleName = roleMapper.findRoleName(roleId);
+        baseExecution.setTemp(roleName);
+        return baseExecution;
+    }
     
 }

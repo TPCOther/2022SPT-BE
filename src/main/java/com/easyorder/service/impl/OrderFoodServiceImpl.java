@@ -43,12 +43,14 @@ public class OrderFoodServiceImpl extends MppServiceImpl<OrderFoodMapper, OrderF
 			for (Order o : orders) {
 				QueryWrapper<OrderFood> q1 = new QueryWrapper<OrderFood>();
 				q1.eq("order_id", o.getOrderId());
-				if (o.getOrderPayMethod() == OrderStateEum.WECHAT.getState()) {
-					payMap.put("微信支付", payMap.getOrDefault("微信支付", 0f) + o.getOrderAmount());
-				} else if (o.getOrderPayMethod() == OrderStateEum.ALIPAY.getState()) {
-					payMap.put("支付宝", payMap.getOrDefault("支付宝", 0f) + o.getOrderAmount());
-				} else {
-					payMap.put("其他支付", payMap.getOrDefault("其他支付", 0f) + o.getOrderAmount());
+				if (o.getOrderPayMethod() != null) {
+					if (o.getOrderPayMethod() == OrderStateEum.WECHAT.getState()) {
+						payMap.put("微信支付", payMap.getOrDefault("微信支付", 0f) + o.getOrderAmount());
+					} else if (o.getOrderPayMethod() == OrderStateEum.ALIPAY.getState()) {
+						payMap.put("支付宝", payMap.getOrDefault("支付宝", 0f) + o.getOrderAmount());
+					} else {
+						payMap.put("其他支付", payMap.getOrDefault("其他支付", 0f) + o.getOrderAmount());
+					}
 				}
 				List<OrderFood> l2 = orderFoodMapper.getOrderFoodList(q1);
 				for (OrderFood of : l2) {

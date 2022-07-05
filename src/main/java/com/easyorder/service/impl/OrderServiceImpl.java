@@ -110,6 +110,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 			if (order.getOrderState() != null && order.getOrderState() == OrderStateEum.COMPLETE.getState()) {
 				order.setPayTime(new Date());
+				if(order.getOrderPayMethod()==null)
+					order.setOrderPayMethod(OrderStateEum.ELSE.getState());
 				b = updateById(order);
 				if (!b) {
 					throw new BaseExecuteException("修改订单失败");

@@ -31,6 +31,9 @@ public class Order {
 	
 	@TableField(exist = false)
 	List<OrderFood> orderFoodList;
-	
+	@TableField(exist = false)
+	String customerNickname;
+	@TableField(exist = false)
+	String customerImg;
 	public Order() {}
 }

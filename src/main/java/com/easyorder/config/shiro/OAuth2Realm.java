@@ -47,7 +47,8 @@ public class OAuth2Realm extends AuthorizingRealm {
         //TODO 查询权限列表，把权限列表添加到info对象中 id=0 为customer，无权限
         List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
         Set<String> permsSet = new HashSet<String>(permissionList);  //获取权限列表
-        
+        System.out.println("------------------------");
+        System.out.println(permsSet);
         // List<String> permissionList = new ArrayList<>();
         // permissionList.add("dinTable:view");
         // Set<String> permsSet = new HashSet<String>(permissionList);

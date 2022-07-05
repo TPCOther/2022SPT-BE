@@ -46,12 +46,21 @@ public class ShiroConfig {
         // filterMap.put("/user/register","anon");
         // filterMap.put("/user/login","anon");
         // filterMap.put("/test/**","anon");
-        filterMap.put("/**","anon");
+        filterMap.put("/customer/login","anon");
         filterMap.put("/hello","anon");
         filterMap.put("/test","anon");
-        filterMap.put("/staff/**","anon");
+        filterMap.put("/staff/register","anon");
+        filterMap.put("/staff/login","anon");
+        filterMap.put("/foodcategory/**","anon");
+        filterMap.put("/food/**","anon");
+        filterMap.put("/order/**","anon");
+
+        // filterMap.put("/**","anon");
         //拦截
-        // filterMap.put("/**","oauth2");
+        filterMap.put("/**","oauth2");
+        // filterMap.put("/table/select","oauth2");
+        // filterMap.put("/table/insert","oauth2");
+        // filterMap.put("/table/update","oauth2");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilter;

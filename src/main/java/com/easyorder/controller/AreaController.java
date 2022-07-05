@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ public class AreaController {
     private AreaService areaService;
     
     @GetMapping("/select")
+    @RequiresPermissions("area:select")
     public RBody areaSelect(Long areaId ,String areaName){
         RBody rbody = new RBody();
         try{
@@ -42,6 +44,7 @@ public class AreaController {
     }
 
     @PostMapping("/insert")
+    @RequiresPermissions("area:insert")
     public RBody areaInsert(@RequestBody Area insertArea){
         RBody rbody = new RBody();
         //判断输入是否完整
@@ -60,6 +63,7 @@ public class AreaController {
     }
 
     @PostMapping("/update")
+    @RequiresPermissions("area:update")
     public RBody areaUpdate(@RequestBody Area updateArea){
         RBody rbody = new RBody();
         //判断输入是否完整
@@ -78,6 +82,7 @@ public class AreaController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("area:delete")
     public RBody areaDelete(@RequestBody Area deleteArea){
         RBody rbody = new RBody();
         //判断输入是否完整

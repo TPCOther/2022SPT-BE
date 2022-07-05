@@ -25,10 +25,10 @@ public class ExceptionAdvice {
             MethodArgumentNotValidException exception = (MethodArgumentNotValidException) e;
             return exception.getBindingResult().getFieldError().getDefaultMessage();
         }
-        else if(e instanceof BaseExecuteException){
-            BaseExecuteException exception = (BaseExecuteException) e;
-            return exception.getMessage();
-        }
+        // else if(e instanceof BaseExecuteException){
+        //     BaseExecuteException exception = (BaseExecuteException) e;
+        //     return exception.getMessage();
+        // }
         else if (e instanceof UnauthenticatedException){
             return "你不具备相关权限";
         }

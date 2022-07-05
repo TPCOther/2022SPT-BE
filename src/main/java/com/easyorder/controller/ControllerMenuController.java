@@ -15,6 +15,7 @@ import com.easyorder.entity.ControllerMenu;
 import com.easyorder.service.ControllerMenuService;
 import com.easyorder.util.RBody;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,7 @@ public class ControllerMenuController {
     ControllerMenuService controllerMenuService;
 
     @PostMapping("/select")
+    @RequiresPermissions("controllerMenu")
     public RBody selectControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();
@@ -44,8 +46,8 @@ public class ControllerMenuController {
     }
 
 
-
     @PostMapping("/update")
+    @RequiresPermissions("controllerMenu")
     public RBody updateControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();
@@ -61,6 +63,7 @@ public class ControllerMenuController {
     }
 
     @PostMapping("/insert")
+    @RequiresPermissions("controllerMenu")
     public RBody insertControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();
@@ -75,6 +78,7 @@ public class ControllerMenuController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("controllerMenu")
     public RBody deleteControllerMenu(@RequestBody ControllerMenu controllerMenu)
     {
         RBody rBody=new RBody();

@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -61,6 +62,7 @@ public class StaffController {
     Gson gson=new Gson();
     
     @PostMapping("/select")
+    @RequiresPermissions("staff:select")
     public RBody selectStaff(@RequestBody Staff staff)
     {
         RBody rBody=new RBody();
@@ -75,6 +77,7 @@ public class StaffController {
     }
 
     @PostMapping("/update")
+    @RequiresPermissions("staff:update")
     public RBody updateStaff(@RequestBody Staff staff)
     {
         RBody rBody=new RBody();
@@ -127,7 +130,10 @@ public class StaffController {
             // TODO 获取权限列表
             List<String> permissionList = permissionService.getPermissionListById(staffId).getTList();
             Set<String> permsSet = new HashSet<>(permissionList);
-            rBody=RBody.ok("登陆成功").data((baseExecution.getTemp())).token(token).put("permission",permsSet);
+            // TODO 获取功能展示表
+            List<String> menuList = roleService.getControllerMenuNameListById(staffId).getTList();
+            Set<String> menuSet = new HashSet<>(menuList);
+            rBody=RBody.ok("登陆成功").data((baseExecution.getTemp())).token(token).put("permission",permsSet).put("menu",menuSet);
         } catch (Exception e) {
             rBody=RBody.error(e.getMessage());
         }

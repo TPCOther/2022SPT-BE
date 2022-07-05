@@ -16,6 +16,7 @@ import com.easyorder.service.RoleService;
 import com.easyorder.util.RBody;
 import com.google.gson.Gson;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,7 @@ public class RoleController {
     Gson gson=new Gson();
     
     @PostMapping("/select")
+    @RequiresPermissions("role:select")
     public RBody selectRole(@RequestBody Role role)
     {
         RBody rBody=new RBody();
@@ -47,6 +49,7 @@ public class RoleController {
     }
 
     @PostMapping("/update")
+    @RequiresPermissions("role:update")
     public RBody updateRole(@RequestBody Role role)
     {
         RBody rBody=new RBody();
@@ -62,6 +65,7 @@ public class RoleController {
     }
 
     @PostMapping("/insert")
+    @RequiresPermissions("role:insert")
     public RBody insertRole(@RequestBody Role role)
     {
         RBody rBody=new RBody();
@@ -76,6 +80,7 @@ public class RoleController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("role:delete")
     public RBody deleteRole(@RequestBody Role role)
     {
         RBody rBody=new RBody();

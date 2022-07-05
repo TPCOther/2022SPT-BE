@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ public class BookingController {
     
 
     @PostMapping("/select")
+    @RequiresPermissions("booking:select")
     public RBody bookingSelect(@RequestBody Booking selectBooking){
         RBody rbody = new RBody();
         BaseExecution<Booking> be = new BaseExecution<Booking>();
@@ -40,6 +42,7 @@ public class BookingController {
     }
 
     @PostMapping("/insert")
+    @RequiresPermissions("booking:insert")
     public RBody bookingInsert(HttpServletRequest request){
         RBody rbody = new RBody();
         Booking insertBooking = new Booking();
@@ -59,6 +62,7 @@ public class BookingController {
     }
 
     @PostMapping("/update")
+    @RequiresPermissions("booking:update")
     public RBody bookingUpdate(@RequestBody Booking insertBooking){
         RBody rbody = new RBody();
         try{
@@ -71,6 +75,7 @@ public class BookingController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("booking:delete")
     public RBody bookingDelete(@RequestBody Booking insertBooking){
         RBody rbody = new RBody();
         try{

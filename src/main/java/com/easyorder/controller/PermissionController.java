@@ -16,6 +16,7 @@ import com.easyorder.service.PermissionService;
 import com.easyorder.util.RBody;
 import com.google.gson.Gson;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ public class PermissionController {
     PermissionService permissionService;
     Gson gson=new Gson();
     @PostMapping("/select")
+    @RequiresPermissions("permission")
     public RBody selectPermission(@RequestBody Permission permission)
     {
         RBody rBody=new RBody();
@@ -44,9 +46,8 @@ public class PermissionController {
         return rBody;
     }
 
-
-
     @PostMapping("/update")
+    @RequiresPermissions("permission")
     public RBody updatePermission(@RequestBody Permission permission)
     {
         RBody rBody=new RBody();
@@ -62,6 +63,7 @@ public class PermissionController {
     }
 
     @PostMapping("/insert")
+    @RequiresPermissions("permission")
     public RBody insertPermission(@RequestBody Permission permission)
     {
         RBody rBody=new RBody();
@@ -76,6 +78,7 @@ public class PermissionController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("permission")
     public RBody deletePermission(@RequestBody Permission permission)
     {
         RBody rBody=new RBody();

@@ -69,6 +69,7 @@ public class DinTableController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("dinTable:delete")
     public RBody dinTableDelete(@RequestBody DinTable insertTable){
         RBody rbody = new RBody();
         try{

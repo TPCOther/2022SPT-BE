@@ -59,10 +59,10 @@ public class DinTableServiceImpl implements DinTableService {
             List<DinTable> dinTableList = dinTableMapper.getDinTableDetail(wapper);
             for(DinTable tableTemp : dinTableList){
                 try{
-                    tableTemp.setTbOrderAmount(orderMapper.getOrderAmountByTableId(tableTemp.getDinTableId()));
+                    tableTemp.setOrderAmount(orderMapper.getOrderAmountByTableId(tableTemp.getDinTableId()));
                 }catch(Exception e){}
-                if(tableTemp.getTbOrderAmount()==null){
-                    tableTemp.setTbOrderAmount(0); 
+                if(tableTemp.getOrderAmount()==null){
+                    tableTemp.setOrderAmount(0); 
                 }
             }
             System.out.println(dinTableList);

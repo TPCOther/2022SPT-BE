@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,6 +66,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/select")
+    @RequiresPermissions("customer:select")
 	public RBody customerSelect(@RequestBody Customer selectTable) {
 		RBody rbody = new RBody();
 		BaseExecution<Customer> be = new BaseExecution<Customer>();
@@ -78,6 +80,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/insert")
+	@RequiresPermissions("customer:insert")
 	public RBody tableInsert(@RequestBody JSONObject json,HttpServletRequest request) {
 		RBody rbody = new RBody();
 		// 测试
@@ -106,6 +109,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/update")
+	@RequiresPermissions("customer:update")
 	public RBody tableUpdate(@RequestBody Customer insertTable) {
 		RBody rbody = new RBody();
 		try {
@@ -118,6 +122,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/delete")
+	@RequiresPermissions("customer:delete")
 	public RBody tableDelete(@RequestBody Customer insertTable) {
 		RBody rbody = new RBody();
 		try {

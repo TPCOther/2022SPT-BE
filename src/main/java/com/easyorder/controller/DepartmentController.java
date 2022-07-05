@@ -11,7 +11,7 @@ package com.easyorder.controller;
 
 import javax.annotation.Resource;
 
-
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +34,7 @@ public class DepartmentController {
     Gson gson=new Gson();
 
     @PostMapping("/update")
+    @RequiresPermissions("department:update")
     public RBody updateDepartment(@RequestBody Department department)
     {
         RBody rBody=new RBody();
@@ -48,9 +49,8 @@ public class DepartmentController {
         return rBody;
     }
     
-
-
     @PostMapping("/select")
+    @RequiresPermissions("department:select")
     public RBody selectDepartment(@RequestBody Department department)
     {
         RBody rBody=new RBody();
@@ -65,6 +65,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/insert")
+    @RequiresPermissions("department:insert")
     public RBody insertDepartment(@RequestBody Department department)
     {
         RBody rBody=new RBody();
@@ -79,6 +80,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("department:delete")
     public RBody deleteDepartment(@RequestBody Department department)
     {
         RBody rBody=new RBody();

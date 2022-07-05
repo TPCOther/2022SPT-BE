@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.easyorder.entity.Order;
 
 public interface OrderMapper extends BaseMapper<Order> {
-    @Select("SELECT tb_order.`tb_order_amount` "+
+    @Select("SELECT tb_order.`order_amount` "+
             "FROM tb_order "+
-            "WHERE tb_order.`table_id`=#{tableId} and tb_order.`tb_order_state`!=0 and tb_order.`tb_order_state`!=4")
+            "WHERE tb_order.`din_table_id`=#{tableId} and tb_order.`order_state`!=0 and tb_order.`order_state`!=4")
     Integer getOrderAmountByTableId(@Param("tableId")Long tableId);
 }

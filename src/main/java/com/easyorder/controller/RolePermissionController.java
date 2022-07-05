@@ -26,6 +26,7 @@ import com.easyorder.service.RolePermissionService;
 
 import com.easyorder.util.RBody;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class RolePermissionController {
     RolePermissionService rolePermissionService;
 
     @PostMapping("/select")
+    @RequiresPermissions("rolePermission")
     public RBody selectRolePermission(@RequestBody RolePermission rolePermission){
         RBody rbody = new RBody();
         BaseExecution<RolePermission> baseExecution = new BaseExecution<>();
@@ -56,6 +58,7 @@ public class RolePermissionController {
 
 
     @PostMapping("/insert")
+    @RequiresPermissions("rolePermission")
     public RBody insertRolePermission(@RequestBody RolePermission rolePermission){
         RBody rbody = new RBody();
         // = new BaseExecution<>();
@@ -70,6 +73,7 @@ public class RolePermissionController {
     }
 
     @PostMapping("/update")
+    @RequiresPermissions("rolePermission")
     public RBody updateRolePermission(HttpServletRequest request){
         
         RBody rbody = new RBody();
@@ -85,6 +89,7 @@ public class RolePermissionController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("rolePermission")
     public RBody deleteRolePermission(@RequestBody RolePermission rolePermission){
         RBody rbody = new RBody();
         //BaseExecution<RolePermission> baseExecution = new BaseExecution<>();

@@ -16,6 +16,7 @@
  */
 package com.easyorder.controller;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,7 @@ public class HeadlineController {
     Gson gson=new Gson();
     
     @PostMapping("/select")
+    @RequiresPermissions("headline")
     public RBody selectHeadline(@RequestBody Headline headline)
     {
         
@@ -66,6 +68,7 @@ public class HeadlineController {
     }
 
     @PostMapping("/update")
+    @RequiresPermissions("headline")
     @ResponseBody
     public RBody updateHeadline(HttpServletRequest request)
     {
@@ -105,8 +108,8 @@ public class HeadlineController {
     }
 
 
-
     @PostMapping("/insert")
+    @RequiresPermissions("headline")
     @ResponseBody
     public RBody insertHeadline(HttpServletRequest request)
     {
@@ -161,6 +164,7 @@ public class HeadlineController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("headline")
     public RBody deleteHeadline(@RequestBody Headline headline)
     {
         if(headline!=null&&headline.getHeadlineId()!=null)

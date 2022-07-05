@@ -8,6 +8,7 @@ import com.easyorder.entity.RoleMenu;
 import com.easyorder.service.RoleMenuService;
 import com.easyorder.util.RBody;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ public class RoleMenuController {
     RoleMenuService roleMenuService;
 
     @PostMapping("/select")
+    @RequiresPermissions("roleMenu")
     public RBody selectRoleMenu(@RequestBody RoleMenu roleMenu){
         RBody rbody = new RBody();
         BaseExecution<RoleMenu> baseExecution = new BaseExecution<>();
@@ -37,6 +39,7 @@ public class RoleMenuController {
 
 
     @PostMapping("/insert")
+    @RequiresPermissions("roleMenu")
     public RBody insertRoleMenu(@RequestBody RoleMenu roleMenu){
         RBody rbody = new RBody();
         // = new BaseExecution<>();
@@ -51,6 +54,7 @@ public class RoleMenuController {
     }
 
     @PostMapping("/update")
+    @RequiresPermissions("roleMenu")
     public RBody updateRoleMenu(HttpServletRequest request){
         
         RBody rbody = new RBody();
@@ -66,6 +70,7 @@ public class RoleMenuController {
     }
 
     @PostMapping("/delete")
+    @RequiresPermissions("roleMenu")
     public RBody deleteRoleMenu(@RequestBody RoleMenu roleMenu){
         RBody rbody = new RBody();
         //BaseExecution<RolePermission> baseExecution = new BaseExecution<>();

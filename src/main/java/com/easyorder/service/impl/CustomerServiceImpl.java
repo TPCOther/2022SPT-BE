@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.sound.midi.SysexMessage;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -48,7 +47,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 		BaseExecution<Customer> baseExecution = new BaseExecution<Customer>();
             QueryWrapper<Customer> wapper = new QueryWrapper<>();
             Long customerId=selectTable.getCustomerId();
-            Integer customerPhone=selectTable.getCustomerPhone();
+            Long customerPhone=selectTable.getCustomerPhone();
             Integer customerVip=selectTable.getCustomerVip();
             wapper.eq(customerId!=null,"customer_id",customerId);
             wapper.eq(customerPhone!=null,"customer_phone",customerPhone);

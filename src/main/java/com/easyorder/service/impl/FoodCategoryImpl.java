@@ -1,5 +1,6 @@
 package com.easyorder.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -11,10 +12,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.dto.BaseExecution;
+import com.easyorder.entity.Customer;
 import com.easyorder.entity.Food;
 import com.easyorder.entity.FoodCategory;
 import com.easyorder.entity.FoodImg;
+import com.easyorder.enums.CustomerVipEum;
 import com.easyorder.enums.ExecuteStateEum;
+import com.easyorder.mapper.CustomerMapper;
 import com.easyorder.mapper.FoodCategoryMapper;
 import com.easyorder.mapper.FoodImgMapper;
 import com.easyorder.mapper.FoodMapper;
@@ -28,6 +32,8 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 	FoodMapper foodMapper;
 	@Resource
 	FoodImgMapper foodImgMapper;
+	@Resource
+	CustomerMapper customerMapper;
 	/**
 	 * 批量插入
 	 */
@@ -145,9 +151,25 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 			be = new BaseExecution<FoodCategory>(ExecuteStateEum.SUCCESS, foodCategoryList);
 			return be;
 		} catch (Exception e) {
-//			return new BaseExecution<FoodCategory>("未知错误");
-			return new BaseExecution<FoodCategory>(e.getMessage());
+			return new BaseExecution<FoodCategory>("未知错误");
 		}
 	}
-
+	//查询全部菜品数量、菜品种类数、会员数
+	@Override
+	public BaseExecution<Long> selectCount() {
+		BaseExecution<Long> be=new BaseExecution<>();
+		List<Long> count=new ArrayList<Long>();
+		try {
+			count.add(foodMapper.selectCount(null));
+			count.add(count());
+			QueryWrapper<Customer> q=new QueryWrapper<>();
+			q.eq("customer_vip",CustomerVipEum.VIP.getState());
+			count.add(customerMapper.selectCount(q));
+		} catch (Exception e) {
+			return new BaseExecution<Long>("未知错误");
+		}
+		be.setEum(ExecuteStateEum.SUCCESS);
+		be.setTList(count);
+		return be;
+	}
 }

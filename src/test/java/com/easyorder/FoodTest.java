@@ -44,7 +44,7 @@ public class FoodTest extends BaseTest {
 	@Test
 	public void foodSelect() {
 		
-		BaseExecution<Food> be= fs.selectFoodByFoodId(13l);
+		BaseExecution<Food> be= fs.selectFoodByFoodId(21l);
 		if(be.getEum()==ExecuteStateEum.SUCCESS) {
 			System.out.print(be.getTemp());
 		}

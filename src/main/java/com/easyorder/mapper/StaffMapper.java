@@ -36,4 +36,7 @@ public interface StaffMapper extends BaseMapper<Staff>{
 
     @Select("SELECT staff.staff_password "+"FROM staff "+"WHERE staff.staff_account=#{account} ")
     String findPasswordByAccount(@Param("account") String account);
+
+    @Select("SELECT staff.staff_Id "+"FROM staff "+"WHERE staff.staff_account=#{account} ")
+    Long findStaffIdByAccount(@Param("account") String account);
 }

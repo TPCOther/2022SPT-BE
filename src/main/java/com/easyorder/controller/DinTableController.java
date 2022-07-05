@@ -2,6 +2,9 @@ package com.easyorder.controller;
 
 import javax.annotation.Resource;
 
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,8 @@ public class DinTableController {
     private DinTableService dinTableService;
 
     @PostMapping("/select")
+    // @RequiresPermissions("dinTable:select")
+    // @RequiresRoles(value={"admin","customer"},logical = Logical.OR)
     public RBody dinTableSelect(@RequestBody DinTable selectDinTable){
         RBody rbody = new RBody();
         BaseExecution<DinTable> be = new BaseExecution<DinTable>();
@@ -37,12 +42,13 @@ public class DinTableController {
 
 
     @PostMapping("/insert")
+    // @RequiresPermissions("dinTable:insert")
     public RBody dinTableInsert(@RequestBody DinTable insertTable){
         RBody rbody = new RBody();
         BaseExecution<DinTable> be = new BaseExecution<DinTable>();
         try{
             be = this.dinTableService.insertDinTable(insertTable);
-            rbody=RBody.ok().data(be.getTemp().getDinTableId());
+            rbody=RBody.ok().data(be.getTemp());
         }catch(Exception e){
             rbody=RBody.error(e.toString());
         }

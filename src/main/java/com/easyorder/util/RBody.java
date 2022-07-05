@@ -24,6 +24,10 @@ public class RBody extends HashMap<String, Object>{
         super.put("data",value);
         return this;
     }
+    public RBody token(String value){
+        super.put("token",value);
+        return this;
+    }
 
     /*
      * 操作成功，自动设置状态为SUCCESS，可单独传入msg进行描述修改

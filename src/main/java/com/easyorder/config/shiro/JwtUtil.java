@@ -13,16 +13,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
-import lombok.extern.slf4j.Slf4j;
 
 //完成JWT相关方法实现
 @Component
-@Slf4j
 public class JwtUtil {
-    @Value("${emos.jwt.secret}") //注入配置信息
+    @Value("${easyorder.jwt.secret}") //注入配置信息
     private String secret;
 
-    @Value("${emos.jwt.expire}")
+    @Value("${easyorder.jwt.expire}")
     private int expire;
 
     public String createToken(Long staffId){
@@ -33,9 +31,9 @@ public class JwtUtil {
         return token; //组装token并返回
     }
 
-    public int getStaffId(String token){
+    public Long getStaffId(String token){
         DecodedJWT jwt = JWT.decode(token);
-        return jwt.getClaim("staffId").asInt();
+        return jwt.getClaim("staffId").asLong();
     }
 
     public void verifierToken(String token){
@@ -43,5 +41,5 @@ public class JwtUtil {
         JWTVerifier verifier = JWT.require(algorithm).build(); //创建对应算法的验证器
         verifier.verify(token); //利用验证器验证token，不成功时抛出RuntimeException
     }
+    
 }
-

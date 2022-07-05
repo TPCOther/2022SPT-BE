@@ -24,6 +24,8 @@ public class DinTable {
 
     @TableField(exist =false)
     private String areaName;
+    @TableField(exist =false)
+    private Integer tbOrderAmount;
 
     public DinTable(){}
     

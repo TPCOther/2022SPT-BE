@@ -15,29 +15,52 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.easyorder.config.shiro.JwtUtil;
 import com.easyorder.service.CustomerService;
+import com.easyorder.util.RBody;
+import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(origins = {"*","null"}) //用于跨域请求，*代表允许响应所有的跨域请求
 // @SuppressWarnings("all") 用于忽略报错
 @RestController
 public class Controller {
 	@Resource
-	CustomerService cs;
-	
+    private JwtUtil jwtUtil;
+	RBody rbody= new RBody();
+
+	@Autowired
+    private RedisTemplate redisTemplate;
+	@Value("${easyorder.jwt.cache-expire}")
+    private int cacheExpire;
+
     @GetMapping("/hello")
-    public Map<String,Object> hello(String hello,String l) {
-    	Map<String, Object> map =new HashMap<>();
-    	List<String> x=new ArrayList<String>();
-    	x.add("testList1");
-    	x.add("testList2");
-        map.put("test1","test1");
-        map.put("testList",x);
-    	return map;
+    public RBody hello() {
+		Long id=1L;
+		String res=jwtUtil.createToken(id);
+    	rbody=RBody.ok().data(res);
+    	return rbody;
+    }
+	@GetMapping("/test")
+    public RBody test() {
+		Long id=1L;
+		String token="eyJ0eX	AiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTcxNjUzOTQsInN0YWZmSWQiOjF9.w1f39zf0IoIecM2_8qjN_LgStYFVj9JIOi1iUtmhsFI";
+		// String token=jwtUtil.createToken(id);
+		// redisTemplate.opsForValue().set(token,"2",cacheExpire, TimeUnit.DAYS);
+		if(redisTemplate.hasKey(token)){
+			redisTemplate.delete(token);
+			Long staffId = jwtUtil.getStaffId(token);
+			token = jwtUtil.createToken(staffId);
+			redisTemplate.opsForValue().set(token,staffId+"2",cacheExpire, TimeUnit.DAYS);
+		}
+		rbody=RBody.ok().data(token);
+    	return rbody;
     }
     
-
 }

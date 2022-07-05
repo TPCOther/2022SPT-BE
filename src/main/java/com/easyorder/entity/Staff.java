@@ -21,7 +21,7 @@ public class Staff {
     private String staffGender;
     private Integer staffSalary; 
     private String staffPosition;
-    private Integer staffPhone;
+    private Long staffPhone;
     private String staffAddress;
     private Integer staffState;
     private String staffAccount;

@@ -18,12 +18,14 @@ import com.easyorder.entity.Role;
 import com.easyorder.entity.Staff;
 import com.easyorder.util.BaseExecuteException;
 
+import cn.hutool.json.JSONObject;
+
 public interface StaffService {
     BaseExecution<Staff> selectStaffList(Staff staff) throws BaseExecuteException;
     BaseExecution<Staff> updateStaff(Staff staff) throws BaseExecuteException;
     BaseExecution<Staff> insertStaff(Staff staff) throws BaseExecuteException;
     // BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException;
-    BaseExecution<Staff> login(HttpServletRequest request);
+    BaseExecution<Long> login(JSONObject request);
 
     // BaseExecution<Role> test(Long id);
 

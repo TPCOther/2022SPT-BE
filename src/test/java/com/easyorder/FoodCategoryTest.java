@@ -17,9 +17,6 @@ public class FoodCategoryTest extends BaseTest {
 
 	@Test
 	public void testSelect() {
-		BaseExecution<Long> be = f.selectCount();
-		for (Long a : be.getTList())
-			System.out.println(a);
-		System.out.print(be.getStateInfo());
+
 	}
 }

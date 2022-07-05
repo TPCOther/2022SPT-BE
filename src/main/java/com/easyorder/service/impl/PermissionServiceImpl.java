@@ -8,6 +8,7 @@
  */
 package com.easyorder.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -28,6 +29,7 @@ import com.easyorder.entity.RolePermission;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.mapper.PermissionMapper;
 import com.easyorder.mapper.RolePermissionMapper;
+import com.easyorder.mapper.StaffMapper;
 @Service
 public class PermissionServiceImpl implements PermissionService{
 
@@ -35,6 +37,8 @@ public class PermissionServiceImpl implements PermissionService{
     PermissionMapper permissionMapper;
     @Resource
     RolePermissionMapper rolePermissionMapper;
+    @Resource
+    StaffMapper staffMapper;
     @Override
     public BaseExecution<Permission> selectPermissionList(Permission permission) throws BaseExecuteException{
         
@@ -121,8 +125,9 @@ public class PermissionServiceImpl implements PermissionService{
     public BaseExecution<Permission> deletePermission(Permission permission) throws BaseExecuteException{
         BaseExecution<Permission> baseExecution=new BaseExecution<>();
         try {
+
             List<Long> longs=rolePermissionMapper.findRoleIdListByPermissionId(permission.getPermissionId());
-            
+
             Long permissionId=permission.getPermissionId();
             for(Long roleId:longs){
                 QueryWrapper<RolePermission> wrapper=new QueryWrapper<>();
@@ -165,6 +170,20 @@ public class PermissionServiceImpl implements PermissionService{
         // } catch (Exception e) {
         //     throw new BaseExecuteException("删除权限(Permission)失败:"+e.getMessage());
         // }
+    }
+
+    @Override
+    public BaseExecution<String> getPermissionListById(Long staffId) throws BaseExecuteException {
+        BaseExecution<String> baseExecution=new BaseExecution<>();
+        Long roleId=staffMapper.findRoleIdByStaffId(staffId);
+        List<Long> permissions=rolePermissionMapper.findPermissionIdListByRoleId(roleId);
+        List<String> urls=new ArrayList<String>();
+        for(Long permissionId:permissions){
+            urls.add(permissionMapper.findPermissionUrl(permissionId));
+        }
+        baseExecution.setEum(ExecuteStateEum.SUCCESS);
+        baseExecution.setTList(urls);
+        return baseExecution;
     }
     
 }

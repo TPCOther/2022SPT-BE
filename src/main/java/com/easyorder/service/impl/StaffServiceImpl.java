@@ -2,7 +2,7 @@
  * @Author: 123456 2373464672@qq.com
  * @Date: 2022-06-28 15:00:54
  * @LastEditors: 123456 2373464672@qq.com
- * @LastEditTime: 2022-07-05 08:52:24
+ * @LastEditTime: 2022-07-05 09:14:22
  * @FilePath: \2022SPT-BE\src\main\java\com\easyorder\service\impl\StaffServiceImpl.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -128,9 +128,6 @@ public class StaffServiceImpl implements StaffService{
         if(staffTempList.size()>0){
             throw new BaseExecuteException("账号已存在，请更改");
         }
-
-
-
         Long long1=staffMapper.findDepartmentIdByDepartmentId(staff.getDepartmentId());
         Long long2=staffMapper.findRoleIdByRoleId(staff.getRoleId());
         if(long1!=null&&long2!=null)
@@ -151,7 +148,8 @@ public class StaffServiceImpl implements StaffService{
                     baseExecution.setEum(ExecuteStateEum.SUCCESS);
                     baseExecution.setTemp(staff);
                     return baseExecution;
-                } catch (Exception e) {
+                } catch (Exception e) 
+                {
                     throw new BaseExecuteException("创建员工(staff)失败,请检查相关信息");
                 }
             }else{
@@ -159,8 +157,7 @@ public class StaffServiceImpl implements StaffService{
             }
         }else{
             throw new BaseExecuteException("创建员工(staff)失败:请检查role_id,department_id是否存在");
-        }   
-        
+        }
     }
 
     @Override
@@ -172,10 +169,6 @@ public class StaffServiceImpl implements StaffService{
         try {
             String string=staffMapper.findPasswordByAccount(account);
             //password=BCrypt.hashpw(password);
-            System.out.println(BCrypt.checkpw(password, string));
-            if(BCrypt.checkpw(password, string))
-            {
-
             if(StringUtils.isEmpty(string)){
                 throw new BaseExecuteException("登录失败！请检查用户名是否存在");
             }
@@ -192,6 +185,7 @@ public class StaffServiceImpl implements StaffService{
         } catch (Exception e) {
             throw new BaseExecuteException("登录失败！密码错误或用户名不存在");
         }
+    }
 
         // UserExample userExample = new UserExample();
         // UserExample.Criteria criteria = userExample.createCriteria();

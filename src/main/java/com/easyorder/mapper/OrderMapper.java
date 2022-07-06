@@ -24,4 +24,14 @@ public interface OrderMapper extends BaseMapper<Order> {
             "FROM tb_order o,customer c "+
             " where o.customer_id=c.customer_id and o.order_evaluation is not null")
     List<Order> getOrderEvaluation();
+    @Select("SELECT o.*,c.customer_nickname "+
+            "FROM tb_order o,customer c "+
+            "${ew.customSqlSegment} and o.customer_id=c.customer_id "+
+            " limit #{p1},#{p2}" )
+    List<Order> getOrderPage(@Param("ew") QueryWrapper<Order> wapper,@Param("p1")int start,@Param("p2")int end);
+    
+    @Select("SELECT count(*) "+
+            "FROM tb_order o,customer c "+
+            "${ew.customSqlSegment} and o.customer_id=c.customer_id ")
+    Long countOrder(@Param("ew") QueryWrapper<Order> wapper);
 }

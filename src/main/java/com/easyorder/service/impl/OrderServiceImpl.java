@@ -14,13 +14,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Customer;
+import com.easyorder.entity.DinTable;
 import com.easyorder.entity.Food;
 import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
 import com.easyorder.enums.CustomerVipEum;
+import com.easyorder.enums.DinTableStateEum;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.enums.OrderStateEum;
 import com.easyorder.mapper.CustomerMapper;
+import com.easyorder.mapper.DinTableMapper;
 import com.easyorder.mapper.FoodMapper;
 import com.easyorder.mapper.OrderFoodMapper;
 import com.easyorder.mapper.OrderMapper;
@@ -45,6 +48,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	CustomerMapper customerMapper;
 	@Resource
 	OrderMapper orderMapper;
+	@Resource 
+	DinTableMapper dinTableMapper;
 
 	/**
 	 * 查询订单
@@ -109,7 +114,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					throw new BaseExecuteException("修改订单菜品列表失败");
 				}
 			}
-			// 如果更新成功
+			// 结账
 			if (order.getOrderState() != null && order.getOrderState() == OrderStateEum.COMPLETE.getState()) {
 				order.setPayTime(new Date());
 				if (order.getOrderPayMethod() == null)
@@ -128,6 +133,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				int x = customerMapper.updateById(customer);
 				if (x <= 0) {
 					throw new BaseExecuteException("积分增加失败");
+				}
+				DinTable dinTable=new DinTable();
+				dinTable.setDinTableId(order.getDinTableId());
+				dinTable.setDinTableState(DinTableStateEum.IDLE.getState());
+				int e=dinTableMapper.updateById(dinTable);
+				if(e<0) {
+					throw new BaseExecuteException("桌台状态更新失败");
 				}
 				return new BaseExecution<Order>(ExecuteStateEum.SUCCESS, order);
 			} else {
@@ -167,6 +179,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			b = orderFoodService.saveBatch(order.getOrderFoodList());
 			if (!b) {
 				throw new BaseExecuteException("添加订单菜品列表失败");
+			}
+			DinTable dinTable=new DinTable();
+			dinTable.setDinTableId(order.getDinTableId());
+			dinTable.setDinTableState(DinTableStateEum.USING.getState());
+			int e=dinTableMapper.updateById(dinTable);
+			if(e<0) {
+				throw new BaseExecuteException("桌台状态更新失败");
 			}
 			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS, order);
 		} catch (BaseExecuteException e) {

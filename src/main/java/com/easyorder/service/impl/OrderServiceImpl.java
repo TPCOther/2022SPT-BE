@@ -14,13 +14,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easyorder.dto.BaseExecution;
 import com.easyorder.entity.Customer;
+import com.easyorder.entity.DinTable;
 import com.easyorder.entity.Food;
 import com.easyorder.entity.Order;
 import com.easyorder.entity.OrderFood;
 import com.easyorder.enums.CustomerVipEum;
+import com.easyorder.enums.DinTableStateEum;
 import com.easyorder.enums.ExecuteStateEum;
 import com.easyorder.enums.OrderStateEum;
 import com.easyorder.mapper.CustomerMapper;
+import com.easyorder.mapper.DinTableMapper;
 import com.easyorder.mapper.FoodMapper;
 import com.easyorder.mapper.OrderFoodMapper;
 import com.easyorder.mapper.OrderMapper;
@@ -45,6 +48,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	CustomerMapper customerMapper;
 	@Resource
 	OrderMapper orderMapper;
+	@Resource
+	DinTableMapper dinTableMapper;
 
 	/**
 	 * 查询订单
@@ -109,7 +114,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					throw new BaseExecuteException("修改订单菜品列表失败");
 				}
 			}
-			// 如果更新成功
+			// 结账
 			if (order.getOrderState() != null && order.getOrderState() == OrderStateEum.COMPLETE.getState()) {
 				order.setPayTime(new Date());
 				if (order.getOrderPayMethod() == null)
@@ -128,6 +133,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				int x = customerMapper.updateById(customer);
 				if (x <= 0) {
 					throw new BaseExecuteException("积分增加失败");
+				}
+				DinTable dinTable = new DinTable();
+				dinTable.setDinTableId(order.getDinTableId());
+				dinTable.setDinTableState(DinTableStateEum.IDLE.getState());
+				int e = dinTableMapper.updateById(dinTable);
+				if (e < 0) {
+					throw new BaseExecuteException("桌台状态更新失败");
 				}
 				return new BaseExecution<Order>(ExecuteStateEum.SUCCESS, order);
 			} else {
@@ -152,7 +164,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	public BaseExecution<Order> insertOrder(Order order) {
 		try {
-			
+
 			Customer customer = customerMapper.selectById(order.getCustomerId());
 			order.setCreateTime(new Date());
 			order.setOrderAmount(
@@ -167,6 +179,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			b = orderFoodService.saveBatch(order.getOrderFoodList());
 			if (!b) {
 				throw new BaseExecuteException("添加订单菜品列表失败");
+			}
+			DinTable dinTable = new DinTable();
+			dinTable.setDinTableId(order.getDinTableId());
+			dinTable.setDinTableState(DinTableStateEum.USING.getState());
+			int e = dinTableMapper.updateById(dinTable);
+			if (e < 0) {
+				throw new BaseExecuteException("桌台状态更新失败");
 			}
 			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS, order);
 		} catch (BaseExecuteException e) {
@@ -200,15 +219,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		try {
 			List<Object> l = new ArrayList<>();
 			Date end_date = new Date();
-			
-			Date start_date = DateUtil.beginOfDay(DateUtil.offsetDay(end_date,-6));
+
+			Date start_date = DateUtil.beginOfDay(DateUtil.offsetDay(end_date, -6));
 			QueryWrapper<Order> q = new QueryWrapper<Order>();
 			q.eq("order_state", OrderStateEum.COMPLETE.getState());
 			q.le("pay_time", end_date);
 			q.ge("pay_time", start_date);
 			List<Order> orders = orderMapper.selectList(q);
 			int effectiveOrder = 0;
-			float revenueDay[] = new float[(int)DateUtil.betweenDay(start_date, end_date, true)+1];
+			float revenueDay[] = new float[(int) DateUtil.betweenDay(start_date, end_date, true) + 1];
 			for (Order o : orders) {
 				int offset = (int) DateUtil.betweenDay(start_date, o.getPayTime(), true);
 				revenueDay[offset] += o.getOrderAmount();
@@ -238,17 +257,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			q.eq(order.getStaffId() != null, "staff_id", order.getStaffId());
 			q.eq(order.getDinTableId() != null, "din_table_id", order.getDinTableId());
 			q.eq(order.getOrderState() != null, "order_state", order.getOrderState());
-			q.like(CustomerNickname!=null,"c.customer_nickname", CustomerNickname);
+			q.like(CustomerNickname != null, "c.customer_nickname", CustomerNickname);
 			List<Order> orderList = null;
 			BaseExecution<Order> be = new BaseExecution<Order>();
 			if (pageIndex > 0 || pageSize > 0) {
-				Page<Order> page = new Page<>(pageIndex, pageSize);
-				page(page, q);
-				orderList = page.getRecords();
-				Long count = count(q);
+				q.eq("1", 1);
+				Long count = orderMapper.countOrder(q);
 				be.setCount(count);
+				orderList = orderMapper.getOrderPage(q,(pageIndex-1)*pageSize,pageSize);
 			} else {
-				q.eq("1",1);
+				q.eq("1", 1);
 				orderList = orderMapper.getOrder(q);
 			}
 			for (Order o : orderList) {
@@ -261,7 +279,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			be.setTList(orderList);
 			return be;
 		} catch (Exception e) {
-//			System.out.println(e.getMessage());
+			System.out.println(e.getMessage());
 			return new BaseExecution<Order>("未知错误");
 		}
 	}
@@ -269,8 +287,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public BaseExecution<Order> selectOrder() {
 		try {
-			List<Order> l=orderMapper.getOrderEvaluation();
-			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS,l);
+			List<Order> l = orderMapper.getOrderEvaluation();
+			return new BaseExecution<Order>(ExecuteStateEum.SUCCESS, l);
 		} catch (Exception e) {
 			return new BaseExecution<Order>("未知错误,请联系管理员");
 		}

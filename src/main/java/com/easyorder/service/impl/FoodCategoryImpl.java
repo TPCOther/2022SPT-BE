@@ -18,6 +18,7 @@ import com.easyorder.entity.FoodCategory;
 import com.easyorder.entity.FoodImg;
 import com.easyorder.enums.CustomerVipEum;
 import com.easyorder.enums.ExecuteStateEum;
+import com.easyorder.enums.FoodStateEum;
 import com.easyorder.mapper.CustomerMapper;
 import com.easyorder.mapper.FoodCategoryMapper;
 import com.easyorder.mapper.FoodImgMapper;
@@ -140,6 +141,7 @@ public class FoodCategoryImpl extends ServiceImpl<FoodCategoryMapper, FoodCatego
 			for (FoodCategory foodCategory : foodCategoryList) {
 				QueryWrapper<Food> queryWrapper = new QueryWrapper<Food>();
 				queryWrapper.eq("category_id", foodCategory.getFoodCategoryId());
+				queryWrapper.eq("food_state",FoodStateEum.SALING.getState());
 				List<Food> foodList=foodMapper.selectList(queryWrapper);
 				for(Food food :foodList) {
 					QueryWrapper<FoodImg> q1=new QueryWrapper<FoodImg>();

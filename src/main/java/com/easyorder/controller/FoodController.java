@@ -216,7 +216,7 @@ public class FoodController {
 			try {
 				BaseExecution<Food> be = foodService.updateFood(food, foodImg, foodImgMap);
 				if (be.getEum().getState() == ExecuteStateEum.SUCCESS.getState()) {
-					if (be.getTemp().getFoodImg() != null)
+					if (be.getTemp().getFoodImg() != null) // 异常
 						return RBody.ok(be.getEum().getStateInfo()).put("foodImg", be.getTemp().getFoodImg());
 					else
 						return RBody.ok(be.getEum().getStateInfo());

@@ -109,7 +109,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodImgMapper, FoodImg> impleme
 				int e = foodMapper.updateById(food);
 				if (e <= 0)
 					throw new BaseExecuteException("更新菜品信息失败");
-				return new BaseExecution<Food>(ExecuteStateEum.SUCCESS);
+				return new BaseExecution<Food>(ExecuteStateEum.SUCCESS,food);
 			} catch (Exception e) {
 				throw new BaseExecuteException("更新失败:" + e.getMessage());
 			}

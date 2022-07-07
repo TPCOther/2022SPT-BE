@@ -45,8 +45,12 @@ public class ShiroConfig {
         // filterMap.put("/captcha.jpg","anon");
         // filterMap.put("/user/register","anon");
         // filterMap.put("/user/login","anon");
-        // filterMap.put("/test/**","anon");
+        
+        filterMap.put("/upload/**","anon");
+        filterMap.put("file:D:/EasyOrder/image/upload/**","anon");
+        filterMap.put("/headline/select","anon");
         filterMap.put("/customer/login","anon");
+        filterMap.put("/customer/insert","anon");
         filterMap.put("/hello","anon");
         filterMap.put("/test","anon");
         filterMap.put("/staff/register","anon");

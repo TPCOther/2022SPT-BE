@@ -24,7 +24,7 @@ public interface StaffService {
     BaseExecution<Staff> selectStaffList(Staff staff) throws BaseExecuteException;
     BaseExecution<Staff> updateStaff(Staff staff) throws BaseExecuteException;
     BaseExecution<Staff> insertStaff(Staff staff) throws BaseExecuteException;
-    // BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException;
+    BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException;
     BaseExecution<Long> login(JSONObject request);
 
     // BaseExecution<Role> test(Long id);

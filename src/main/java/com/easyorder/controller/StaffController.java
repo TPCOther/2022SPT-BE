@@ -155,17 +155,17 @@ public class StaffController {
     //     return rBody;
     // }
 
-    // @PostMapping("/delete")
-    // public RBody deleteStaff(@RequestBody Staff staff)
-    // {
-    //     RBody rBody=new RBody();
-    //     BaseExecution<Staff> baseExecution=new BaseExecution<>();
-    //     try {
-    //         baseExecution=this.staffService.deleteStaff(staff);
-    //         rBody=RBody.ok();
-    //     } catch (Exception e) {
-    //         rBody=RBody.error(e.toString());
-    //     }
-    //     return rBody;
-    // }
+    @PostMapping("/delete")
+    public RBody deleteStaff(@RequestBody Staff staff)
+    {
+        RBody rBody=new RBody();
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        try {
+            baseExecution=this.staffService.deleteStaff(staff);
+            rBody=RBody.ok();
+        } catch (Exception e) {
+            rBody=RBody.error(e.toString());
+        }
+        return rBody;
+    }
 }

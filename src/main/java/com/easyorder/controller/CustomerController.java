@@ -65,11 +65,11 @@ public class CustomerController {
 
 	@PostMapping("/select")
     @RequiresPermissions("customer:select")
-	public RBody customerSelect(@RequestBody Customer selectTable) {
+	public RBody customerSelect(@RequestBody Customer selectCustomer) {
 		RBody rbody = new RBody();
 		BaseExecution<Customer> be = new BaseExecution<Customer>();
 		try {
-			be = this.customerService.selectCustomerList(selectTable);
+			be = this.customerService.selectCustomerList(selectCustomer);
 			rbody = RBody.ok().data(be.getTList());
 		} catch (Exception e) {
 			rbody = RBody.error(e.toString());
@@ -78,8 +78,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/insert")
-	@RequiresPermissions("customer:insert")
-	public RBody tableInsert(@RequestBody JSONObject json,HttpServletRequest request) {
+	public RBody customerInsert(@RequestBody JSONObject json,HttpServletRequest request) {
 		RBody rbody = new RBody();
 		// 测试
 		String code = json.getStr("code");
@@ -108,7 +107,7 @@ public class CustomerController {
 
 	@PostMapping("/update")
 	@RequiresPermissions("customer:update")
-	public RBody tableUpdate(@RequestBody Customer insertTable) {
+	public RBody customerUpdate(@RequestBody Customer insertTable) {
 		RBody rbody = new RBody();
 		try {
 			this.customerService.updateCustomer(insertTable);
@@ -121,7 +120,7 @@ public class CustomerController {
 
 	@PostMapping("/delete")
 	@RequiresPermissions("customer:delete")
-	public RBody tableDelete(@RequestBody Customer insertTable) {
+	public RBody customerDelete(@RequestBody Customer insertTable) {
 		RBody rbody = new RBody();
 		try {
 			this.customerService.deleteCustomer(insertTable);

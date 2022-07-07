@@ -52,7 +52,6 @@ public class HeadlineController {
     Gson gson=new Gson();
     
     @PostMapping("/select")
-    @RequiresPermissions("headline")
     public RBody selectHeadline(@RequestBody Headline headline)
     {
         

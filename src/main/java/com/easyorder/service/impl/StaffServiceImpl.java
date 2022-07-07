@@ -132,10 +132,10 @@ public class StaffServiceImpl implements StaffService{
         Long long2=staffMapper.findRoleIdByRoleId(staff.getRoleId());
         if(long1!=null&&long2!=null)
         {
-            if(StringUtils.isNotEmpty(staff.getStaffName())&&StringUtils.isNotEmpty(staff.getStaffGender())
-            &&staff.getStaffSalary()!=null&&StringUtils.isNotEmpty(staff.getStaffPosition())&&staff.getStaffPhone()!=null
-            &&StringUtils.isNotEmpty(staff.getStaffAccount())&&StringUtils.isNotEmpty(staff.getStaffPassword()))
-            {
+            // if(StringUtils.isNotEmpty(staff.getStaffName())&&StringUtils.isNotEmpty(staff.getStaffGender())
+            // &&staff.getStaffSalary()!=null&&StringUtils.isNotEmpty(staff.getStaffPosition())&&staff.getStaffPhone()!=null
+            // &&StringUtils.isNotEmpty(staff.getStaffAccount())&&StringUtils.isNotEmpty(staff.getStaffPassword()))
+            // {
 
                 String encodePassword=BCrypt.hashpw(staff.getStaffPassword());
                 staff.setStaffPassword(encodePassword);
@@ -152,9 +152,9 @@ public class StaffServiceImpl implements StaffService{
                 {
                     throw new BaseExecuteException("创建员工(staff)失败,请检查相关信息");
                 }
-            }else{
-                throw new BaseExecuteException("创建员工(staff)失败:请检查name、gender、salary、position、phone是否正确");
-            }
+            // }else{
+            //     throw new BaseExecuteException("创建员工(staff)失败:请检查name、gender、salary、position、phone是否正确");
+            // }
         }else{
             throw new BaseExecuteException("创建员工(staff)失败:请检查role_id,department_id是否存在");
         }
@@ -233,24 +233,24 @@ public class StaffServiceImpl implements StaffService{
     //     return baseExecution;
     // }
 
-    // @Override
-    // public BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException{
+    @Override
+    public BaseExecution<Staff> deleteStaff(Staff staff) throws BaseExecuteException{
         
         
-    //     BaseExecution<Staff> baseExecution=new BaseExecution<>();
-    //     try {
-    //         int effctedNum=staffMapper.deleteById(staff);
-    //         if(effctedNum<=0)
-    //         {
-    //             throw new BaseExecuteException("删除0条信息");
-    //         }
-    //         baseExecution.setEum(ExecuteStateEum.SUCCESS);
-    //         baseExecution.setTemp(staff);
-    //         return baseExecution;
-    //     } catch (Exception e) {
-    //         throw new BaseExecuteException("删除员工(staff)失败:"+e.getMessage());
-    //     }
+        BaseExecution<Staff> baseExecution=new BaseExecution<>();
+        try {
+            int effctedNum=staffMapper.deleteById(staff);
+            if(effctedNum<=0)
+            {
+                throw new BaseExecuteException("删除0条信息");
+            }
+            baseExecution.setEum(ExecuteStateEum.SUCCESS);
+            baseExecution.setTemp(staff);
+            return baseExecution;
+        } catch (Exception e) {
+            throw new BaseExecuteException("删除员工(staff)失败:"+e.getMessage());
+        }
         
-    // }
+    }
     
 }
